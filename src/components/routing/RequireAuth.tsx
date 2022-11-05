@@ -1,9 +1,10 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useUserContext } from "../../contexts";
 
 export const RequireAuth = () => {
-  // Temp, put this into a context
-  const isAuthenticated = false;
+  const { user } = useUserContext();
+  const isAuthenticated = user !== undefined;
   const location = useLocation();
 
   if (!isAuthenticated) {
