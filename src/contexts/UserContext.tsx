@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 import { LoginResult } from "../types/Api";
 import { IUser } from "../types/User";
 
@@ -25,7 +25,7 @@ const UserContext = createContext<IUserContext | null>(null);
 
 export const UserContextProvider = ({ children }: IProviderProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
-	const [error, setError] = useState<string>();
+	const [error] = useState<string>(); //TODO: setError to handle login error state
 	const [user, setUser] = useState<IUser>();
 
 	const logIn = async (email: string, password: string): Promise<LoginResult> => {

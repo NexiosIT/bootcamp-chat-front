@@ -6,3 +6,7 @@ export interface ApiResultBase {
 export interface LoginResult extends ApiResultBase {
   // TODO: add any response data from login
 }
+
+export interface RegisterResult extends ApiResultBase {
+  // TODO: add any response data form register
+}

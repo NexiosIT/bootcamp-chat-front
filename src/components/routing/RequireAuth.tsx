@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useUserContext } from "../../contexts";
+import { PATH_LOGIN } from "../../pages/routes";
 
 export const RequireAuth = () => {
   const { user } = useUserContext();
@@ -12,7 +13,7 @@ export const RequireAuth = () => {
     // trying to go to when they were redirected. This allows us to send them
     // along to that page after they login, which is a nicer user experience
     // than dropping them off on the home page.
-    return <Navigate to="/login" state={{ from: location }} />;
+    return <Navigate to={PATH_LOGIN} state={{ from: location }} />;
   }
 
   return <Outlet />;

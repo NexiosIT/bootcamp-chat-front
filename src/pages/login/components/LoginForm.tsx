@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Button, Link, TextField, Typography } from "@mui/material";
 import styles from "./LoginForm.module.css";
 import { useUserContext } from "../../../contexts";
-import { useNavigate } from "react-router-dom";
+import { PATH_REGISTER } from "../../routes";
 
 export interface ILoginFormProps {
   onSuccess: () => void;
@@ -37,7 +37,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 
 	return (
 		<Box className={styles.loginFormContainer}>
-			<Typography variant="h4">Sign in</Typography>
+			<Typography variant="h4">Sign In</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
 					margin="normal"
@@ -62,7 +62,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 				<Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
 					Sign In
 				</Button>
-				<Link href="/register" variant="body2">
+				<Link href={PATH_REGISTER} variant="body2">
 					Don't have an account? Sign Up
 				</Link>
 			</Box>
