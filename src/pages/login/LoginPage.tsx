@@ -1,15 +1,15 @@
-import { Card, Container, Grid } from "@mui/material";
 import React, { useCallback } from "react";
+import { Grid } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Center } from "../../components";
+import { PATH_ROOT } from "../routes";
 import { LoginForm } from "./components/LoginForm";
 
 export const LoginPage = () => {
 	const navigate = useNavigate();
 
 	const handleLoginSuccess = useCallback(() => {
-		navigate("/", { replace: true });
-	}, []);
+		navigate(PATH_ROOT, { replace: true });
+	}, [navigate]);
 
 	return (
 		<Grid

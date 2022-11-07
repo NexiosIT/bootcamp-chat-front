@@ -6,6 +6,7 @@ import { LoginPage } from "./login";
 import { MainPage } from "./main";
 import { PageNotFound } from "./notfound";
 import { RegisterPage } from "./register";
+import { PATH_LOGIN, PATH_REGISTER, PATH_ROOT } from "./routes";
 
 function App() {
 	return (
@@ -13,10 +14,10 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route element={<RequireAuth />}>
-						<Route path="/" element={<MainPage />} />
+						<Route path={PATH_ROOT}element={<MainPage />} />
 					</Route>
-					<Route path="/login" element={<LoginPage />} />
-					<Route path="/register" element={<RegisterPage />} />
+					<Route path={PATH_LOGIN} element={<LoginPage />} />
+					<Route path={PATH_REGISTER} element={<RegisterPage />} />
 					<Route path="*" element={<PageNotFound />} />
 				</Routes>
 			</BrowserRouter>
