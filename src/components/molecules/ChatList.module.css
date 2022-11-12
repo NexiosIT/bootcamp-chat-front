@@ -1,0 +1,6 @@
+.chatListContainer {
+  border: 1px solid yellow;
+  flex-grow: 1;
+  overflow: auto;
+  height: calc(100vh - 150px);
+}

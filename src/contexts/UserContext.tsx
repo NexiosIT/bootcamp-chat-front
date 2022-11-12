@@ -26,7 +26,7 @@ const UserContext = createContext<IUserContext | null>(null);
 export const UserContextProvider = ({ children }: IProviderProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error] = useState<string>(); //TODO: setError to handle login error state
-	const [user, setUser] = useState<IUser>();
+	const [user, setUser] = useState<IUser | undefined>({email: "jvd@nexiosit.com", id: "1", initials: "jvd", username: "Jonathan"});
 
 	const logIn = async (email: string, password: string): Promise<LoginResult> => {
 		setLoading(true);

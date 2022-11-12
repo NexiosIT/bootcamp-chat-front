@@ -1,0 +1,7 @@
+/* --- CSS VARIABLES --- */
+:root {
+  --background-color: #ececec;
+  --background-color-light: #ffffff;
+  --background-color-hover: #c9c9c9;
+  --text-color: rgba(0, 0, 0, 0.87);
+}

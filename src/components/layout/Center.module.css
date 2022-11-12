@@ -1,7 +1,0 @@
-.centerContainer {
-  display: flex;
-  align-items: center;
-  justify-items: center;
-  flex-grow: 1;
-  height: 100%;
-}

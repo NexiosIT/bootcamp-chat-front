@@ -1,0 +1,21 @@
+@import "/src/styles/Vars.css";
+
+.chatHistoryContainer {
+  max-width: 100%;
+  background-color: var(--background-color-light);
+  height: calc(100vh - 190px);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 60px;
+}
+
+.chatHistoryEntry {
+  display: flex;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.chatHistoryEntry.isMine {
+  flex-direction: row-reverse;
+}

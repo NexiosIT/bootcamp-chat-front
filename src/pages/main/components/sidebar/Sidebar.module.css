@@ -1,0 +1,8 @@
+.sidebarContainer {
+  width: 400px;
+  max-width: 30%;
+  min-width: 300px;
+  border: 1px solid red;
+  min-height: 100vh;
+  max-height: 100vh;
+}
