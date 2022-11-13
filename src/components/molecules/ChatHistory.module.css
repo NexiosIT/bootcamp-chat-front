@@ -2,12 +2,12 @@
 
 .chatHistoryContainer {
   max-width: 100%;
-  background-color: var(--background-color-light);
-  height: calc(100vh - 190px);
+  background-color: var(--theme-color-xlight);
+  height: calc(100vh - 170px);
   overflow: auto;
   display: flex;
   flex-direction: column;
-  padding: 20px 60px;
+  padding: 20px 50px;
 }
 
 .chatHistoryEntry {

@@ -6,10 +6,10 @@ export const ChatListItem = () => {
 	return (
 		<ListItem className={styles.chatListItemContainer}>
 			<ListItemAvatar>
-				<Avatar>MB</Avatar>
+				<Avatar>JD</Avatar>
 			</ListItemAvatar>
 			<ListItemText 
-        primary="Minka Borny"
+        primary="John Deere"
         secondary="Bla bla bla bla bla bla"
       />
 		{/* 	<Grid item xs={2}>

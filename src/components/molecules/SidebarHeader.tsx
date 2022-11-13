@@ -1,17 +1,19 @@
 import React from "react";
-import { Avatar, Grid, IconButton } from "@mui/material";
+import { Avatar, Grid, IconButton, Typography } from "@mui/material";
 import { MoreVert } from "@mui/icons-material";
 import styles from "./SidebarHeader.module.css";
 
 export const SidebarHeader = () => {
   return (
-    <Grid container padding={2} spacing={2} className={styles.sidebarHeaderContainer}>
+    <Grid container padding={1} className={styles.sidebarHeaderContainer}>
       <Grid item xs={10}>
-        <Avatar sx={{ width: 54, height: 54 }}>JVD</Avatar>
+        <Avatar sx={{ width: 42, height: 42 }}>
+          <Typography>JD</Typography>
+        </Avatar>
       </Grid>
-      <Grid item xs={2}>
-        <IconButton>
-          <MoreVert fontSize="large"/>
+      <Grid paddingTop={0.5} item xs={2}>
+        <IconButton size="small">
+          <MoreVert fontSize="medium"/>
         </IconButton>
       </Grid>
     </Grid>
