@@ -1,12 +1,22 @@
+import { createTheme } from "@mui/material";
+import { ThemeProvider } from "@mui/system";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { UserContextProvider } from "./contexts";
 import "./index.css";
-import App from "./App";
+import App from "./pages/App";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
+
+const theme = createTheme();
+
 root.render(
 	<React.StrictMode>
-		<App />
+    <ThemeProvider theme={theme}>
+      <UserContextProvider>
+        <App />
+      </UserContextProvider>
+    </ThemeProvider>
 	</React.StrictMode>
 );
 
