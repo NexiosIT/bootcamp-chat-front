@@ -1,8 +1,4 @@
-/* --- CSS VARIABLES --- */
-:root {
-  --background-color: #ececec;
-  --text-color: rgba(0, 0, 0, 0.87);
-}
+@import "/src/styles/Vars.css";
 
 .app-container {
 	text-align: center;
