@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Box, Button, TextField, Typography, Link } from "@mui/material";
 import styles from "./RegisterForm.module.css";
-import { RegisterUser } from "../../../api/RegisterUser";
 import { PATH_LOGIN } from "../../routes";
+import { RegisterUser } from "../../../api/User";
 
 interface IRegisterFormProps {
 	onSuccess: () => void;
@@ -42,13 +42,14 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 		}
 
 		if (validForm && username && email && password) {
+      console.log("")
 			const result = await RegisterUser(username, email, password);
-      if (result.isSuccess) {
+     /*  if (result.isSuccess) {
         // register was a success, call success callback
         onSuccess();
       }else {
         // register failed, display error: TODO
-      }
+      } */
 		}
 		setLoading(false);
 	};
@@ -58,6 +59,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 			<Typography variant="h4">Sign Up</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
+          defaultValue="Jonathan"
 					margin="normal"
 					required
 					fullWidth
@@ -68,6 +70,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoFocus
 				/>
 				<TextField
+          defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -77,6 +80,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoComplete="email"
 				/>
 				<TextField
+          defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
@@ -89,6 +93,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					helperText={errors["password"]}
 				/>
 				<TextField
+          defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth

@@ -10,3 +10,23 @@ export interface LoginResult extends ApiResultBase {
 export interface RegisterResult extends ApiResultBase {
   // TODO: add any response data form register
 }
+
+// api response types
+export interface IApiChatMessage {
+  user: string;
+  chatroom: IApiChatRoom;
+  data: string;
+  published_at: string;
+}
+
+export interface IApiChatRoom {
+  name: string;
+  allowed_users: string[];
+}
+
+export interface IApiUser {
+  id: string;
+  email: string;
+  username: string;
+  initials: string;
+}
