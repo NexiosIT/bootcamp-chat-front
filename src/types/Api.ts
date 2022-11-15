@@ -13,6 +13,7 @@ export interface RegisterResult extends ApiResultBase {
 
 // api response types
 export interface IApiChatMessage {
+  id: string;
   user: string;
   chatroom: IApiChatRoom;
   data: string;
@@ -20,6 +21,7 @@ export interface IApiChatMessage {
 }
 
 export interface IApiChatRoom {
+  id: string;
   name: string;
   allowed_users: string[];
 }

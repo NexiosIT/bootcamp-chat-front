@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import { Alert, Box, Button, TextField, Typography, Link } from "@mui/material";
 import styles from "./RegisterForm.module.css";
 import { PATH_LOGIN } from "../../routes";
 import { RegisterUser } from "../../../api/User";
+import { useNavigate } from "react-router-dom";
 
 interface IRegisterFormProps {
 	onSuccess: () => void;
@@ -11,10 +12,14 @@ interface IRegisterFormProps {
 export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errors, setErrors] = useState<{ [key: string]: string }>({});
+	const [submitError, setSubmitError] = useState<string>();
+
+	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setErrors({});
+		setSubmitError(undefined);
 		setLoading(true);
 
 		const data = new FormData(event.currentTarget);
@@ -42,14 +47,14 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 		}
 
 		if (validForm && username && email && password) {
-      console.log("")
 			const result = await RegisterUser(username, email, password);
-     /*  if (result.isSuccess) {
-        // register was a success, call success callback
-        onSuccess();
-      }else {
-        // register failed, display error: TODO
-      } */
+
+			if (!result.isSuccess) {
+				setSubmitError(result.error);
+			} else {
+				// register was a succes, reroute to login page
+				navigate(PATH_LOGIN, { replace: true });
+			}
 		}
 		setLoading(false);
 	};
@@ -59,7 +64,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 			<Typography variant="h4">Sign Up</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
-          defaultValue="Jonathan"
+					defaultValue="Jonathan"
 					margin="normal"
 					required
 					fullWidth
@@ -70,7 +75,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoFocus
 				/>
 				<TextField
-          defaultValue="jvd@nexiosit.com"
+					defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -80,7 +85,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoComplete="email"
 				/>
 				<TextField
-          defaultValue="password123"
+					defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
@@ -93,7 +98,7 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					helperText={errors["password"]}
 				/>
 				<TextField
-          defaultValue="password123"
+					defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
@@ -101,10 +106,11 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					label="Confirm Password"
 					type="password"
 					id="confirm-password"
-          autoComplete="confirm-password"
+					autoComplete="confirm-password"
 					error={!!errors["confirm-password"]}
 					helperText={errors["confirm-password"]}
 				/>
+				{submitError && <Alert severity="error">{submitError}</Alert>}
 				<Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
 					Sign Up
 				</Button>
