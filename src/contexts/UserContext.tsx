@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
+import { LoginUser } from "../api/User";
 import { LoginResult } from "../types/Api";
 import { IUser } from "../types/User";
 
@@ -14,13 +15,6 @@ export interface IUserContext {
 	logOut: () => void;
 }
 
-const dummyUser: IUser = {
-	email: "jvd@nexiosit.com",
-	id: "b4e318fe-5160-4242-b0ad-ed72164129e7",
-	username: "Jonathan",
-	initials: "JVD",
-};
-
 const UserContext = createContext<IUserContext | null>(null);
 
 export const UserContextProvider = ({ children }: IProviderProps) => {
@@ -31,18 +25,11 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 	const logIn = async (email: string, password: string): Promise<LoginResult> => {
 		setLoading(true);
 
-		// fake wait for login to complete
-		// TODO: call login action here
-		await new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(null);
-			}, 1000);
-		});
+		const result = await LoginUser(email, password);
 
 		setLoading(false);
-		setUser(dummyUser);
-
-		return { isSuccess: true };
+    
+		return result;
 	};
 
 	const logOut = () => {

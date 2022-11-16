@@ -1,5 +1,5 @@
 import axios from "axios";
-import { RegisterResult } from "../types";
+import { LoginResult, RegisterResult } from "../types";
 import { ERROR_DEFAULT } from "../vars/messages";
 import { getApiBaseUrl } from "./urls";
 
@@ -9,6 +9,7 @@ export const RegisterUser = async (username: string, email: string, password: st
 	try {
 		const response = await axios.post(url, { username, email, password });
 		console.log("register response", response);
+    // TODO: add JWT to response so it can be saved in context
 		return {
 			isSuccess: true,
 		};
@@ -28,14 +29,28 @@ export const RegisterUser = async (username: string, email: string, password: st
 	}
 };
 
-export const LoginUser = async (email: string, password: string) => {
+export const LoginUser = async (email: string, password: string) : Promise<LoginResult> => {
 	const url = getApiBaseUrl() + "/auth/login";
 
 	try {
 		const response = await axios.post(url, { email, password });
-		console.log("login response", response);
+    console.log("login response", response);
+
+    return {
+      isSuccess: true
+    }
 	} catch (e) {
-		console.log("login error", e);
+    if (axios.isAxiosError(e)) {
+      return {
+				isSuccess: false,
+				error: e.response?.data?.message || ERROR_DEFAULT,
+			};
+    } else {
+      return {
+				isSuccess: false,
+				error: ERROR_DEFAULT,
+			};
+    }
 	}
 };
 

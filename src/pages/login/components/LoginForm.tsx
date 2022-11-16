@@ -1,8 +1,9 @@
-import React from "react";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
 import styles from "./LoginForm.module.css";
 import { useUserContext } from "../../../contexts";
-import { PATH_REGISTER } from "../../routes";
+import { PATH_REGISTER, PATH_ROOT } from "../../routes";
+import { useNavigate } from "react-router-dom";
 
 export interface ILoginFormProps {
   onSuccess: () => void;
@@ -10,6 +11,8 @@ export interface ILoginFormProps {
 
 export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 	const { logIn, loading } = useUserContext();
+  const [submitError, setSubmitError] = useState<string>();
+  const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -26,12 +29,12 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 		if (email && password) {
 			const result = await logIn(email, password);
       console.log("login result", result)
-			if (result && result.isSuccess) {
-				// login succesfull, call success callback
-        onSuccess();
+			if (!result.isSuccess) {
+				setSubmitError(result.error);
 			} else {
-        // login failed, display error: TODO
-      }
+				// login was a succes, reroute to main
+				navigate(PATH_ROOT, { replace: true });
+			}
 		}
 	};
 
@@ -40,6 +43,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 			<Typography variant="h4">Sign In</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
+          defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -50,6 +54,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					autoFocus
 				/>
 				<TextField
+          defaultValue="password"
 					margin="normal"
 					required
 					fullWidth
@@ -59,6 +64,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					id="password"
 					autoComplete="current-password"
 				/>
+        {submitError && <Alert severity="error">{submitError}</Alert>}
 				<Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
 					Sign In
 				</Button>
