@@ -12,8 +12,8 @@ export interface IUserContext {
 	error?: string;
 	user?: IUser;
   jwt?: string;
-	logIn: (email: string, password: string) => Promise<LoginResult>;
-	logOut: () => void;
+	signIn: (email: string, password: string) => Promise<LoginResult>;
+	signOut: () => void;
 }
 
 const UserContext = createContext<IUserContext | null>(null);
@@ -24,7 +24,7 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 	const [user, setUser] = useState<IUser | undefined>();
   const [jwt, setJwt] = useState<string>();
 
-	const logIn = async (email: string, password: string): Promise<LoginResult> => {
+	const signIn = async (email: string, password: string): Promise<LoginResult> => {
 		setLoading(true);
 
 		const result = await LoginUser(email, password);
@@ -47,12 +47,12 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 		return result;
 	};
 
-	const logOut = () => {
+	const signOut = () => {
 		setUser(undefined);
     setJwt(undefined);
 	};
 
-	return <UserContext.Provider value={{ loading, logIn, logOut, error, user, jwt }}>{children}</UserContext.Provider>;
+	return <UserContext.Provider value={{ loading, signIn, signOut, error, user, jwt }}>{children}</UserContext.Provider>;
 };
 
 // Create a hook to access the user context

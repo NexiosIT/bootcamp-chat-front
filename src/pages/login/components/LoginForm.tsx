@@ -10,7 +10,7 @@ export interface ILoginFormProps {
 }
 
 export const LoginForm = ({onSuccess}: ILoginFormProps) => {
-	const { logIn, loading } = useUserContext();
+	const { signIn, loading } = useUserContext();
   const [submitError, setSubmitError] = useState<string>();
   const navigate = useNavigate();
 
@@ -22,7 +22,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 		const password = data.get("password")?.toString();
 
 		if (email && password) {
-			const result = await logIn(email, password);
+			const result = await signIn(email, password);
 			if (!result.isSuccess) {
 				setSubmitError(result.error);
 			} else {
