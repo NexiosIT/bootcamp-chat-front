@@ -4,7 +4,7 @@ export interface ApiResultBase {
 }
 
 export interface LoginResult extends ApiResultBase {
-  // TODO: add any response data from login
+  accessToken?: string;
 }
 
 export interface RegisterResult extends ApiResultBase {}

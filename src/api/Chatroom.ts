@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getApiBaseUrl } from "./urls";
+import { getApiBaseUrl } from "./utils";
 
 export const GetChatrooms = async () => {
 	const url = getApiBaseUrl() + "/rooms";

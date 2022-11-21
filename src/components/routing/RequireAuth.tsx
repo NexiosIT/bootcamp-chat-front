@@ -4,9 +4,11 @@ import { useUserContext } from "../../contexts";
 import { PATH_LOGIN } from "../../pages/routes";
 
 export const RequireAuth = () => {
-  const { user } = useUserContext();
+  const { user, jwt } = useUserContext();
   const isAuthenticated = user !== undefined;
   const location = useLocation();
+
+  console.log("user & token on require auth", user, jwt)
 
   if (!isAuthenticated) {
     // Redirect them to the /login page, but save the current location they were

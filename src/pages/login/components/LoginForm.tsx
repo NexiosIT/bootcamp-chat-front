@@ -21,19 +21,14 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 		const email = data.get("email")?.toString();
 		const password = data.get("password")?.toString();
 
-		console.log("Logging in user:", {
-			email,
-			password,
-		});
-
 		if (email && password) {
 			const result = await logIn(email, password);
       console.log("login result", result)
 			if (!result.isSuccess) {
 				setSubmitError(result.error);
 			} else {
-				// login was a succes, reroute to main
-				navigate(PATH_ROOT, { replace: true });
+				// login was a succes, call success callback
+				onSuccess();
 			}
 		}
 	};
@@ -54,7 +49,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					autoFocus
 				/>
 				<TextField
-          defaultValue="password"
+          defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth

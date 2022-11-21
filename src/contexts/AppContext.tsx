@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
 import { IChatMessage, IChatRoom, IUser } from "../types";
 import { LoginResult } from "../types/Api";
+import { useUserContext } from "./UserContext";
 
 interface IProviderProps {
 	children: ReactNode;
@@ -18,12 +19,15 @@ export interface IAppContext {
 const AppContext = createContext<IAppContext | null>(null);
 
 export const AppContextProvider = ({ children }: IProviderProps) => {
+	const { jwt } = useUserContext();
 	const [chatrooms, setChatrooms] = useState<IChatRoom[]>([]);
 	const [chatroomsLoading, setChatroomsLoading] = useState<boolean>(false);
 	const [messages, setMessages] = useState<IChatMessage[]>([]);
 	const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
 	const [users, setUsers] = useState<IUser[]>([]);
 	const [usersLoading, setUsersLoading] = useState<boolean>(false);
+
+	console.log("jwt on render app context", jwt);
 
 	return (
 		<AppContext.Provider value={{ chatrooms, chatroomsLoading, messages, messagesLoading, users, usersLoading }}>
