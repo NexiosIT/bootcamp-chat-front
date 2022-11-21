@@ -9,12 +9,10 @@ export const RegisterUser = async (username: string, email: string, password: st
 
 	try {
 		const response = await axios.post(url, { username, email, password });
-		console.log("register response", response);
 		return {
 			isSuccess: true,
 		};
 	} catch (e) {
-		// console.log("register error", e);
 		if (axios.isAxiosError(e)) {
 			return {
 				isSuccess: false,
@@ -31,7 +29,6 @@ export const LoginUser = async (email: string, password: string): Promise<LoginR
 
 	try {
 		const response = await axios.post(url, { email, password });
-		console.log("login response", response);
 
 		if (response.data && response.data.access_token) {
 			return {

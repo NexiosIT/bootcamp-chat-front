@@ -31,7 +31,7 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
     if (result.accessToken) {
       setJwt(result.accessToken);
 
-      const userResult = await GetUser(result.accessToken);
+      // const userResult = await GetUser(result.accessToken);
       // TODO: fetch username on login
 
       setUser({
@@ -49,6 +49,7 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 
 	const logOut = () => {
 		setUser(undefined);
+    setJwt(undefined);
 	};
 
 	return <UserContext.Provider value={{ loading, logIn, logOut, error, user, jwt }}>{children}</UserContext.Provider>;

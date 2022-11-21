@@ -1,3 +1,5 @@
+import { IChatRoom } from "./ChatRoom";
+
 export interface ApiResultBase {
   isSuccess: boolean;
   error?: string;
@@ -8,6 +10,10 @@ export interface LoginResult extends ApiResultBase {
 }
 
 export interface RegisterResult extends ApiResultBase {}
+
+export interface GetChatroomsResult extends ApiResultBase {
+  chatrooms?: IChatRoom[]
+}
 
 // api response types
 export interface IApiChatMessage {

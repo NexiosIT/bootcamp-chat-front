@@ -23,7 +23,6 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 
 		if (email && password) {
 			const result = await logIn(email, password);
-      console.log("login result", result)
 			if (!result.isSuccess) {
 				setSubmitError(result.error);
 			} else {
