@@ -1,5 +1,5 @@
-import React from "react";
-import { Box, Button, Link, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
 import styles from "./LoginForm.module.css";
 import { useUserContext } from "../../../contexts";
 import { PATH_REGISTER } from "../../routes";
@@ -9,7 +9,8 @@ export interface ILoginFormProps {
 }
 
 export const LoginForm = ({onSuccess}: ILoginFormProps) => {
-	const { logIn, loading } = useUserContext();
+	const { signIn, loading } = useUserContext();
+  const [submitError, setSubmitError] = useState<string>();
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -18,20 +19,14 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 		const email = data.get("email")?.toString();
 		const password = data.get("password")?.toString();
 
-		console.log("Logging in user:", {
-			email,
-			password,
-		});
-
 		if (email && password) {
-			const result = await logIn(email, password);
-      console.log("login result", result)
-			if (result && result.isSuccess) {
-				// login succesfull, call success callback
-        onSuccess();
+			const result = await signIn(email, password);
+			if (!result.isSuccess) {
+				setSubmitError(result.error);
 			} else {
-        // login failed, display error: TODO
-      }
+				// login was a succes, call success callback
+				onSuccess();
+			}
 		}
 	};
 
@@ -40,6 +35,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 			<Typography variant="h4">Sign In</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
+          defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -50,6 +46,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					autoFocus
 				/>
 				<TextField
+          defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
@@ -59,6 +56,7 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					id="password"
 					autoComplete="current-password"
 				/>
+        {submitError && <Alert severity="error">{submitError}</Alert>}
 				<Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
 					Sign In
 				</Button>

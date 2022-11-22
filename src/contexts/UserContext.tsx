@@ -1,4 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
+import { GetUser, LoginUser } from "../api/User";
 import { LoginResult } from "../types/Api";
 import { IUser } from "../types/User";
 
@@ -10,46 +11,48 @@ export interface IUserContext {
 	loading: boolean;
 	error?: string;
 	user?: IUser;
-	logIn: (email: string, password: string) => Promise<LoginResult>;
-	logOut: () => void;
+  jwt?: string;
+	signIn: (email: string, password: string) => Promise<LoginResult>;
+	signOut: () => void;
 }
-
-const dummyUser: IUser = {
-	email: "jvd@nexiosit.com",
-	id: "b4e318fe-5160-4242-b0ad-ed72164129e7",
-	username: "Jonathan",
-	initials: "JVD",
-};
 
 const UserContext = createContext<IUserContext | null>(null);
 
 export const UserContextProvider = ({ children }: IProviderProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [error] = useState<string>(); //TODO: setError to handle login error state
-	const [user, setUser] = useState<IUser | undefined>({email: "jvd@nexiosit.com", id: "1", initials: "jvd", username: "Jonathan"});
+	const [user, setUser] = useState<IUser | undefined>();
+  const [jwt, setJwt] = useState<string>();
 
-	const logIn = async (email: string, password: string): Promise<LoginResult> => {
+	const signIn = async (email: string, password: string): Promise<LoginResult> => {
 		setLoading(true);
 
-		// fake wait for login to complete
-		// TODO: call login action here
-		await new Promise((resolve) => {
-			setTimeout(() => {
-				resolve(null);
-			}, 1000);
-		});
+		const result = await LoginUser(email, password);
+    if (result.accessToken) {
+      setJwt(result.accessToken);
+
+      // const userResult = await GetUser(result.accessToken);
+      // TODO: fetch username on login
+
+      setUser({
+        email,
+        username: "Jonathan",
+        initials: "JVD",
+        id: "0"
+      })
+    }
 
 		setLoading(false);
-		setUser(dummyUser);
-
-		return { isSuccess: true };
+    
+		return result;
 	};
 
-	const logOut = () => {
+	const signOut = () => {
 		setUser(undefined);
+    setJwt(undefined);
 	};
 
-	return <UserContext.Provider value={{ loading, logIn, logOut, error, user }}>{children}</UserContext.Provider>;
+	return <UserContext.Provider value={{ loading, signIn, signOut, error, user, jwt }}>{children}</UserContext.Provider>;
 };
 
 // Create a hook to access the user context
