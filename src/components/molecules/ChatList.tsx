@@ -1,11 +1,11 @@
 import { Divider, Grid, List } from "@mui/material";
 import React from "react";
-import { IChatRoom } from "../../types";
+import { IChatroom } from "../../types";
 import styles from "./ChatList.module.css";
 import { ChatListItem } from "./ChatListItem";
 
 interface IChatListProps {
-	chatrooms?: IChatRoom[];
+	chatrooms?: IChatroom[];
 }
 
 export const ChatList = ({ chatrooms = [] }: IChatListProps) => {

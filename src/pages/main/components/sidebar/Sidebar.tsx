@@ -7,16 +7,20 @@ import { useUserContext } from "../../../../contexts";
 interface ISidebarProps {}
 
 export const Sidebar = ({}: ISidebarProps) => {
-	const { chatrooms } = useAppContext();
+	const { chatrooms, setNewChatOpen } = useAppContext();
 	const { signOut } = useUserContext();
 
 	const handleSignOut = () => {
 		signOut();
 	};
 
+	const handleClickNewChat = () => {
+		setNewChatOpen(true);
+	};
+
 	return (
 		<div className={styles.sidebarContainer}>
-			<SidebarHeader onSignOut={handleSignOut} />
+			<SidebarHeader onClickNewChat={handleClickNewChat} onSignOut={handleSignOut} />
 			<SidebarSearch />
 			<ChatList chatrooms={chatrooms} />
 		</div>

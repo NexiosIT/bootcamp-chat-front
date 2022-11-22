@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Alert, Box, Button, Link, TextField, Typography } from "@mui/material";
 import styles from "./LoginForm.module.css";
 import { useUserContext } from "../../../contexts";
-import { PATH_REGISTER, PATH_ROOT } from "../../routes";
-import { useNavigate } from "react-router-dom";
+import { PATH_REGISTER } from "../../routes";
 
 export interface ILoginFormProps {
   onSuccess: () => void;
@@ -12,7 +11,6 @@ export interface ILoginFormProps {
 export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 	const { signIn, loading } = useUserContext();
   const [submitError, setSubmitError] = useState<string>();
-  const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();

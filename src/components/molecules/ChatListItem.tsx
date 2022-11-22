@@ -1,10 +1,10 @@
 import React from "react";
 import { Avatar, Grid, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import styles from "./ChatListItem.module.css";
-import { IChatRoom } from "../../types";
+import { IChatroom } from "../../types";
 
 interface IChatListItemProps {
-  chatroom: IChatRoom;
+  chatroom: IChatroom;
 }
 
 export const ChatListItem = ({chatroom}: IChatListItemProps) => {

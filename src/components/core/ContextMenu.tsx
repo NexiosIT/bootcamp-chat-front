@@ -4,9 +4,10 @@ import { IconButton, Menu } from "@mui/material";
 
 interface IContextMenuProps {
 	children?: ReactNode;
+	closeOnClick?: boolean;
 }
 
-export const ContextMenu = ({ children }: IContextMenuProps) => {
+export const ContextMenu = ({ children, closeOnClick = true }: IContextMenuProps) => {
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 	const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -28,9 +29,10 @@ export const ContextMenu = ({ children }: IContextMenuProps) => {
 				<MoreVert />
 			</IconButton>
 			<Menu
-        id="context-menu"
+				id="context-menu"
 				anchorEl={anchorEl}
 				open={open}
+				onClick={closeOnClick ? handleClose : undefined}
 				onClose={handleClose}
 			>
 				{children}

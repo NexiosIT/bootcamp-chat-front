@@ -1,9 +1,9 @@
-import { IChatRoom } from "./ChatRoom";
+import { IChatroom } from "./ChatRoom";
 
 export interface IChatMessage {
   id: string;
   user: string;
-  chatroom: IChatRoom;
+  chatroom: IChatroom;
   data: string;
   publishedAt: Date;
 }
