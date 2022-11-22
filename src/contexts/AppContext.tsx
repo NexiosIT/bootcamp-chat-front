@@ -1,7 +1,8 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect } from "react";
+import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback } from "react";
+import { GetMessages } from "../api/Chatmessage";
 import { GetChatrooms } from "../api/Chatroom";
 import { CreateChatroomModal } from "../pages/main/components/create-modal/CreateChatroomModal";
-import { IChatMessage, IChatroom, IUser } from "../types";
+import { IChatmessage, IChatroom, IUser } from "../types";
 import { useUserContext } from "./UserContext";
 
 interface IProviderProps {
@@ -12,13 +13,17 @@ export interface IAppContext {
 	chatrooms?: IChatroom[];
 	chatroomsLoading: boolean;
 	chatroomsError?: string;
-	messages?: IChatMessage[];
+	messages?: IChatmessage[];
 	messagesLoading: boolean;
+	messagesError?: string;
 	users?: IUser[];
 	usersLoading: boolean;
-  newChatOpen: boolean;
+	selectedChatroom?: IChatroom;
+	setSelectedChatroom: React.Dispatch<React.SetStateAction<IChatroom | undefined>>;
+	newChatOpen: boolean;
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  addChatroom: (chatroom: IChatroom) => void;
+	addChatroom: (chatroom: IChatroom) => void;
+	getMessagesForRoom: (roomId?: string) => IChatmessage[];
 }
 
 const AppContext = createContext<IAppContext | null>(null);
@@ -26,19 +31,23 @@ const AppContext = createContext<IAppContext | null>(null);
 export const AppContextProvider = ({ children }: IProviderProps) => {
 	const { jwt } = useUserContext();
 
-  // App data states
+	// App data states
 	const [chatrooms, setChatrooms] = useState<IChatroom[]>();
 	const [chatroomsLoading, setChatroomsLoading] = useState<boolean>(false);
 	const [chatroomsError, setChatroomsError] = useState<string>();
-	const [messages, setMessages] = useState<IChatMessage[]>();
+	const [messages, setMessages] = useState<IChatmessage[]>();
 	const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
+	const [messagesError, setMessagesError] = useState<string>();
 	const [users, setUsers] = useState<IUser[]>();
 	const [usersLoading, setUsersLoading] = useState<boolean>(false);
 
-  // UI states
+	// Navigation state
+	const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
+
+	// UI states
 	const [newChatOpen, setNewChatOpen] = useState<boolean>(false);
 
-  // Effects
+	// Effects
 	useEffect(() => {
 		const fetchRooms = async (jwt: string) => {
 			setChatroomsLoading(true);
@@ -46,7 +55,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
 			const result = await GetChatrooms(jwt);
 
-			if (result.isSuccess) {
+			if (result.isSuccess && result.chatrooms) {
 				setChatrooms(result.chatrooms);
 			} else {
 				setChatroomsError(result.error);
@@ -55,16 +64,46 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 			setChatroomsLoading(false);
 		};
 
+		const fetchMessages = async (jwt: string) => {
+			setMessagesLoading(true);
+			setMessagesError(undefined);
+
+			const result = await GetMessages(jwt);
+
+			if (result.isSuccess && result.messages) {
+				setMessages(result.messages);
+			} else {
+				setMessagesError(result.error);
+			}
+
+			setMessagesLoading(false);
+		};
+
 		// Do a basic fetch of current chatrooms on login
 		if (jwt && chatrooms === undefined) {
 			fetchRooms(jwt);
 		}
+
+		if (jwt && messages === undefined) {
+			fetchMessages(jwt);
+		}
 	}, [jwt]);
 
-  // Global state control functions
-  const addChatroom = (chatroom: IChatroom) => {
-    setChatrooms([...chatrooms || [], chatroom])
-  }
+	console.log("selected chat on render", selectedChatroom);
+
+	// Global state control functions
+	const addChatroom = (chatroom: IChatroom) => {
+		setChatrooms([...(chatrooms || []), chatroom]);
+	};
+
+	// Memoized data getters
+	const getMessagesForRoom = useCallback(
+		(roomId?: string): IChatmessage[] => {
+			if (!messages || !roomId) return [];
+			return messages.filter((message) => message.chatroom.id === roomId);
+		},
+		[messages]
+	);
 
 	return (
 		<AppContext.Provider
@@ -74,14 +113,18 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				chatroomsLoading,
 				messages,
 				messagesLoading,
+				messagesError,
 				users,
 				usersLoading,
-        newChatOpen,
+				selectedChatroom,
+				setSelectedChatroom,
+				newChatOpen,
 				setNewChatOpen,
-        addChatroom
+				addChatroom,
+				getMessagesForRoom,
 			}}
 		>
-      <CreateChatroomModal />
+			<CreateChatroomModal />
 			{children}
 		</AppContext.Provider>
 	);

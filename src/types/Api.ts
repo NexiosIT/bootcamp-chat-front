@@ -1,3 +1,4 @@
+import { IChatmessage } from "./ChatMessage";
 import { IChatroom } from "./ChatRoom";
 
 export interface ApiResultBase {
@@ -5,12 +6,14 @@ export interface ApiResultBase {
   error?: string;
 }
 
+// Authentication api
 export interface LoginResult extends ApiResultBase {
   accessToken?: string;
 }
 
 export interface RegisterResult extends ApiResultBase {}
 
+// Chatroom api
 export interface GetChatroomsResult extends ApiResultBase {
   chatrooms?: IChatroom[]
 }
@@ -24,9 +27,14 @@ export interface CreateChatroomResult extends ApiResultBase {
   chatroom?: IChatroom;
 }
 
+// Chatmessage api
+export interface GetMessagesResult extends ApiResultBase {
+  messages?: IChatmessage[];
+}
+
 // api response types
-export interface IApiChatMessage {
-  id: string;
+export interface IApiChatmessage {
+  _id: string;
   user: string;
   chatroom: IApiChatroom;
   data: string;
@@ -34,13 +42,13 @@ export interface IApiChatMessage {
 }
 
 export interface IApiChatroom {
-  id: string;
+  _id: string;
   name: string;
   allowed_users: string[];
 }
 
 export interface IApiUser {
-  id: string;
+  _id: string;
   email: string;
   username: string;
   initials: string;
