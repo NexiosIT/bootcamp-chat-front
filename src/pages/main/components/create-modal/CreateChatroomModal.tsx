@@ -4,11 +4,13 @@ import { useAppContext } from "../../../../contexts/AppContext";
 import styles from "./CreateChatroomModal.module.css";
 import { CreateChatroomRequest } from "../../../../types";
 import { CreateChatroom } from "../../../../api/Chatroom";
+import { useUserContext } from "../../../../contexts";
 
 interface ICreateChatroomModalProps {}
 
 export const CreateChatroomModal = () => {
 	const { newChatOpen, setNewChatOpen, addChatroom } = useAppContext();
+	const { jwt } = useUserContext();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [submitError, setSubmitError] = useState<string>();
 	const [valid, setValid] = useState<boolean>(false);
@@ -25,20 +27,22 @@ export const CreateChatroomModal = () => {
 	const handleSubmit = async () => {
 		setLoading(true);
 
-		const request: CreateChatroomRequest = {
-			name,
-			allowed_users: ids,
-		};
+		if (jwt) {
+			const request: CreateChatroomRequest = {
+				name,
+				allowed_users: ids,
+			};
 
-		const response = await CreateChatroom(request);
+			const response = await CreateChatroom(jwt, request);
 
-		if (response?.isSuccess && response?.chatroom) {
-			// chatroom succesfully made, add to state & close modal
-			addChatroom(response.chatroom);
-			setLoading(false);
-			setNewChatOpen(false);
-		} else {
-			setSubmitError(response?.error);
+			if (response?.isSuccess && response?.chatroom) {
+				// chatroom succesfully made, add to state & close modal
+				addChatroom(response.chatroom);
+				setLoading(false);
+				setNewChatOpen(false);
+			} else {
+				setSubmitError(response?.error);
+			}
 		}
 	};
 

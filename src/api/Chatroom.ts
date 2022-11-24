@@ -16,7 +16,7 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 				chatrooms: response.data.map((item: IApiChatroom) => {
 					return {
 						// TODO: real id
-						id: "0",
+						id: item._id,
 						allowedUsers: item?.allowed_users || [],
 						name: item?.name,
 					};
@@ -48,11 +48,11 @@ export const GetChatroom = async (id: string) => {
 	}
 };
 
-export const CreateChatroom = async (chatroom: CreateChatroomRequest): Promise<CreateChatroomResult> => {
+export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomRequest): Promise<CreateChatroomResult> => {
 	const url = getApiBaseUrl() + "/rooms";
 
 	try {
-		const response = await axios.post(url, chatroom);
+		const response = await axios.post(url, chatroom, { headers: getDefaultHeaders(jwt) });
 		console.log("create room response", response);
 		if (response.data && response.data.allowed_users && response.data.name && response.data._id) {
 			return {

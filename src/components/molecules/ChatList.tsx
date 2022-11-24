@@ -6,15 +6,21 @@ import { ChatListItem } from "./ChatListItem";
 
 interface IChatListProps {
 	chatrooms?: IChatroom[];
+	selectedChat?: IChatroom;
+	onSelectChat: (chatroom: IChatroom) => void;
 }
 
-export const ChatList = ({ chatrooms = [] }: IChatListProps) => {
+export const ChatList = ({ chatrooms = [], selectedChat, onSelectChat }: IChatListProps) => {
 	return (
 		<div className={styles.chatListContainer}>
 			<List component="nav">
-				{chatrooms.map((room, index) => (
+				{chatrooms.map((chatroom, index) => (
 					<div key={index}>
-						<ChatListItem chatroom={room} />
+						<ChatListItem
+							selected={selectedChat?.id === chatroom.id}
+							onClick={() => onSelectChat(chatroom)}
+							chatroom={chatroom}
+						/>
 						{index !== chatrooms.length - 1 && <Divider />}
 					</div>
 				))}

@@ -1,19 +1,55 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Send } from "@mui/icons-material";
-import { Grid, IconButton, Input } from "@mui/material";
+import { CircularProgress, Grid, IconButton, Input } from "@mui/material";
 import styles from "./ChatInput.module.css";
 
-export const ChatInput = () => {
+interface IChatInputProps {
+	onSubmitMessage: (message: string) => void;
+	submitMessageLoading: boolean;
+	enabled: boolean;
+}
+
+export const ChatInput = ({ onSubmitMessage, submitMessageLoading, enabled }: IChatInputProps) => {
+	const [value, setValue] = useState<string>("");
+	const [valid, setValid] = useState<boolean>(false);
+
+	useEffect(() => {
+		if (!value || value === "") setValid(false);
+		else setValid(true);
+	}, [value]);
+
+	const handleClickSubmit = useCallback(() => {
+		onSubmitMessage(value);
+	}, [value]);
+
+	const handleInputKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === "Enter") onSubmitMessage(value);
+		},
+		[value]
+	);
+
 	return (
-    <Grid container padding={2} paddingTop={1.5} className={styles.chatInputContainer}>
-      <Grid item xs={11}>
-        <Input fullWidth placeholder="Type Message" />
-      </Grid>
-      <Grid item xs={1}>
-        <IconButton color="primary" size="medium">
-          <Send fontSize="large"/>
-        </IconButton>
-      </Grid>
-    </Grid>
-  )
+		<Grid container padding={2} paddingTop={1.5} className={styles.chatInputContainer}>
+			<Grid item xs={11}>
+				<Input
+					onKeyDown={handleInputKeyDown}
+					disabled={!enabled || submitMessageLoading}
+					value={value}
+					onChange={(e) => setValue(e.target.value)}
+					fullWidth
+					placeholder="Type Message"
+				/>
+			</Grid>
+			<Grid item xs={1}>
+				{submitMessageLoading ? (
+					<CircularProgress size={42} />
+				) : (
+					<IconButton onClick={handleClickSubmit} disabled={!valid || !enabled} color="primary" size="medium">
+						<Send fontSize="large" />
+					</IconButton>
+				)}
+			</Grid>
+		</Grid>
+	);
 };
