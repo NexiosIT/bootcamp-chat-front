@@ -23,7 +23,8 @@ export interface IAppContext {
 	newChatOpen: boolean;
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	addChatroom: (chatroom: IChatroom) => void;
-	getMessagesForRoom: (roomId?: string) => IChatmessage[];
+  addMessage: (message: IChatmessage) => void;
+	getMessagesForRoom: (roomId?: string) => IChatmessage[] | null;
 }
 
 const AppContext = createContext<IAppContext | null>(null);
@@ -87,20 +88,30 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 		if (jwt && messages === undefined) {
 			fetchMessages(jwt);
 		}
-	}, [jwt]);
+	}, [jwt, chatrooms, messages]);
 
 	console.log("selected chat on render", selectedChatroom);
 
 	// Global state control functions
-	const addChatroom = (chatroom: IChatroom) => {
-		setChatrooms([...(chatrooms || []), chatroom]);
-	};
+	const addChatroom = useCallback(
+		(chatroom: IChatroom) => {
+			setChatrooms([...(chatrooms || []), chatroom]);
+		},
+		[setChatrooms, chatrooms]
+	);
+
+	const addMessage = useCallback(
+		(message: IChatmessage) => {
+			setMessages([...(messages || []), message]);
+		},
+		[setMessages, messages]
+	);
 
 	// Memoized data getters
 	const getMessagesForRoom = useCallback(
-		(roomId?: string): IChatmessage[] => {
-			if (!messages || !roomId) return [];
-			return messages.filter((message) => message.chatroom.id === roomId);
+		(roomId?: string): IChatmessage[] | null => {
+			if (!messages || !roomId) return null;
+			return messages.filter((message) => message.chatroom.id === roomId).reverse();
 		},
 		[messages]
 	);
@@ -121,6 +132,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				newChatOpen,
 				setNewChatOpen,
 				addChatroom,
+        addMessage,
 				getMessagesForRoom,
 			}}
 		>

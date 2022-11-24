@@ -32,6 +32,12 @@ export interface GetMessagesResult extends ApiResultBase {
   messages?: IChatmessage[];
 }
 
+export interface CreateMessageRequest {
+  user: string;
+  chatroom: string;
+  data: string;
+}
+
 // api response types
 export interface IApiChatmessage {
   _id: string;

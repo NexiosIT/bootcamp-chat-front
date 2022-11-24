@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetMessagesResult, IApiChatmessage } from "../types";
+import { CreateMessageRequest, GetMessagesResult, IApiChatmessage } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
@@ -53,11 +53,11 @@ export const GetMessage = async (id: string) => {
 	}
 };
 
-export const CreateMessage = async () => {
+export const CreateMessage = async (jwt: string, message: CreateMessageRequest) => {
 	const url = getApiBaseUrl() + "/messages";
 
 	try {
-		const response = await axios.post(url);
+		const response = await axios.post(url, message, { headers: getDefaultHeaders(jwt) });
 		console.log("create message response", response);
 	} catch (e) {
 		console.log("create message error", e);
