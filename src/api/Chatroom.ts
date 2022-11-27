@@ -15,7 +15,6 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 				isSuccess: true,
 				chatrooms: response.data.map((item: IApiChatroom) => {
 					return {
-						// TODO: real id
 						id: item._id,
 						allowedUsers: item?.allowed_users || [],
 						name: item?.name,

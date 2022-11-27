@@ -29,17 +29,12 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 
 		const result = await LoginUser(email, password);
     if (result.accessToken) {
-      setJwt(result.accessToken);
-
-      // const userResult = await GetUser(result.accessToken);
-      // TODO: fetch username on login
-
-      setUser({
-        email,
-        username: "Jonathan",
-        initials: "JVD",
-        id: "0"
-      })
+      const userResult = await GetUser(result.accessToken);
+      
+      if (userResult.user) {
+        setJwt(result.accessToken);
+        setUser(userResult.user);
+      }
     }
 
 		setLoading(false);

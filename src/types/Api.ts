@@ -1,5 +1,6 @@
 import { IChatmessage } from "./ChatMessage";
 import { IChatroom } from "./ChatRoom";
+import { IUser } from "./User";
 
 export interface ApiResultBase {
   isSuccess: boolean;
@@ -12,6 +13,11 @@ export interface LoginResult extends ApiResultBase {
 }
 
 export interface RegisterResult extends ApiResultBase {}
+
+// User api
+export interface GetUserResult extends ApiResultBase {
+  user?: IUser;
+}
 
 // Chatroom api
 export interface GetChatroomsResult extends ApiResultBase {
@@ -36,6 +42,10 @@ export interface CreateMessageRequest {
   user: string;
   chatroom: string;
   data: string;
+}
+
+export interface CreateMessageResult extends ApiResultBase {
+  message?: IChatmessage;
 }
 
 // api response types

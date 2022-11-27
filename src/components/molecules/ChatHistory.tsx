@@ -8,9 +8,10 @@ import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../vars/messages";
 
 interface IChatHistoryProps {
 	messages: IChatmessage[] | null;
+  userId?: string;
 }
 
-export const ChatHistory = ({ messages }: IChatHistoryProps) => {
+export const ChatHistory = ({ messages, userId }: IChatHistoryProps) => {
 	const renderMessages = (messages: IChatmessage[]) => {
 		if (messages.length === 0)
 			return (
@@ -22,14 +23,13 @@ export const ChatHistory = ({ messages }: IChatHistoryProps) => {
 		return (
 			<>
 				{messages.map((message, index) => {
-					//TODO: find out if this is my message or not, for alignment
-					const isMyMessage = message.user === "";
+					const isMyMessage = userId && message.user === userId;
 					const isSameSenderAsLast =
 						messages[index + 1] !== undefined && messages[index + 1].user === messages[index].user;
 
 					return (
 						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage })}>
-							<ChatMessage showName={!isSameSenderAsLast}>{message.data}</ChatMessage>
+							<ChatMessage title="- Name -" showTitle={!isSameSenderAsLast}>{message.data}</ChatMessage>
 						</div>
 					);
 				})}

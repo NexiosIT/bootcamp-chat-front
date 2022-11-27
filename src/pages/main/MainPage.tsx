@@ -8,27 +8,29 @@ import { useUserContext } from "../../contexts";
 import { CreateMessage } from "../../api/Chatmessage";
 
 export const MainPage = () => {
-  const { selectedChatroom } = useAppContext();
-  const { jwt } = useUserContext();
+  const { selectedChatroom, addMessage } = useAppContext();
+  const { jwt, user } = useUserContext();
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
 	const handleSubmitMessage = async (message: string) => {
     setSubmitLoading(true);
 
-    if (selectedChatroom && jwt) {
+    if (selectedChatroom && jwt && user && user.id) {
       const request: CreateMessageRequest = {
         chatroom: selectedChatroom.id,
-        user: "637a3ce32665c902ebf25b29", // TODO: hardcoded id because no user fetch yet
+        user: user.id,
         data: message
       }
 
       const response = await CreateMessage(jwt, request);
 
-      
+      console.log("response", response)
+
+      if (response.message) addMessage(response.message);
 
     }
 
-
+    setSubmitLoading(false);
   };
 
 	return (

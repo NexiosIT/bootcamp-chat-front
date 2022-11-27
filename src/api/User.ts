@@ -1,5 +1,5 @@
 import axios from "axios";
-import { LoginResult, RegisterResult } from "../types";
+import { GetUserResult, LoginResult, RegisterResult } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
@@ -62,13 +62,33 @@ export const LogoutUser = async (email: string, password: string) => {
 };
 
 // Get a user details for a given token
-export const GetUser = async (jwt: string) => {
+export const GetUser = async (jwt: string): Promise<GetUserResult> => {
 	const url = getApiBaseUrl() + "/users/profile";
 
 	try {
 		const response = await axios.get(url, { headers: getDefaultHeaders(jwt) });
-		console.log("get user response", response);
+
+		if (response.data) {
+			return {
+				isSuccess: true,
+				user: {
+					id: response.data?._id,
+					email: response.data?.email,
+					username: response.data?.username,
+					initials: response.data?.username.charAt(0),
+				},
+			};
+		}
+
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		console.log("get user error", e);
+		if (axios.isAxiosError(e)) {
+			return {
+				isSuccess: false,
+				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
+			};
+		} else {
+			return DEFAULT_ERROR_RESULT;
+		}
 	}
 };

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CreateMessageRequest, GetMessagesResult, IApiChatmessage } from "../types";
+import { CreateMessageRequest, CreateMessageResult, GetMessagesResult, IApiChatmessage } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
@@ -53,14 +53,39 @@ export const GetMessage = async (id: string) => {
 	}
 };
 
-export const CreateMessage = async (jwt: string, message: CreateMessageRequest) => {
+export const CreateMessage = async (jwt: string, message: CreateMessageRequest): Promise<CreateMessageResult> => {
 	const url = getApiBaseUrl() + "/messages";
 
 	try {
 		const response = await axios.post(url, message, { headers: getDefaultHeaders(jwt) });
-		console.log("create message response", response);
+
+		if (response.data) {
+			return {
+				isSuccess: true,
+				message: {
+					id: response.data._id,
+					chatroom: {
+						id: response.data.chatroom,
+						name: "",
+						allowedUsers: [],
+					},
+					publishedAt: new Date(response.data.published_at),
+					data: response.data.data,
+					user: response.data.user,
+				},
+			};
+		}
+
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		console.log("create message error", e);
+		if (axios.isAxiosError(e)) {
+			return {
+				isSuccess: false,
+				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
+			};
+		} else {
+			return DEFAULT_ERROR_RESULT;
+		}
 	}
 };
 

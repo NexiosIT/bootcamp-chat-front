@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, TextField } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useAppContext } from "../../../../contexts/AppContext";
 import styles from "./CreateChatroomModal.module.css";
 import { CreateChatroomRequest } from "../../../../types";
@@ -10,14 +10,22 @@ interface ICreateChatroomModalProps {}
 
 export const CreateChatroomModal = () => {
 	const { newChatOpen, setNewChatOpen, addChatroom } = useAppContext();
-	const { jwt } = useUserContext();
+	const { jwt, user } = useUserContext();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [submitError, setSubmitError] = useState<string>();
 	const [valid, setValid] = useState<boolean>(false);
 	const [name, setName] = useState<string>("");
 	// this is a hardcoded list of 2 account ids
 	// TODO: Make a component that fetches users & makes a list to select from
-	const [ids] = useState<string[]>(["637a3ce32665c902ebf25b29", "637a498b67dfc022d17a5bd4"]);
+	const [ids, setIds] = useState<string[]>(["637a498b67dfc022d17a5bd4"]);
+
+  useEffect(() => {
+    // logged in user has changed, set id list accordingly
+    // hardcoded second // TODO
+    const ids = ["6383974c5be551702183e66d"];
+    if (user && user.id) ids.push(user.id)
+    setIds(ids)
+  }, [user])
 
 	useEffect(() => {
 		if (!name || name === "") setValid(false);
