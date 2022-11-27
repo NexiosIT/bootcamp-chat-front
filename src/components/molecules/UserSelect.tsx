@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { Checkbox, List, ListItem } from "@mui/material";
 import { IUser } from "../../types";
 import { useUserContext } from "../../contexts";
-import styles from "./UserSelect.module.css";
 
 interface IUserSelectProps {
 	users: IUser[];
@@ -15,7 +14,7 @@ export const UserSelect = ({ onChange, users }: IUserSelectProps) => {
 
 	const handleToggle = (user: IUser, checked: boolean) => {
 		let newSelected;
-    
+
 		if (checked) {
 			newSelected = [...checkedUsers, user];
 			setCheckedUsers(newSelected);
@@ -34,7 +33,7 @@ export const UserSelect = ({ onChange, users }: IUserSelectProps) => {
 	if (availableUsers.length === 0) return <>No users to connect with.</>;
 
 	return (
-		<List className={styles.userSelectContainer}>
+		<List>
 			{availableUsers.map((user, index) => {
 				return (
 					<ListItem

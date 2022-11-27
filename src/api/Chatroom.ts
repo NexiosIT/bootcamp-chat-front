@@ -52,7 +52,6 @@ export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomReques
 
 	try {
 		const response = await axios.post(url, chatroom, { headers: getDefaultHeaders(jwt) });
-		console.log("create room response", response);
 		if (response.data && response.data.allowed_users && response.data.name && response.data._id) {
 			return {
 				isSuccess: true,

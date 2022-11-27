@@ -8,8 +8,6 @@ export const RequireAuth = () => {
   const isAuthenticated = user !== undefined;
   const location = useLocation();
 
-  console.log("user & token on require auth", user, jwt)
-
   if (!isAuthenticated) {
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them

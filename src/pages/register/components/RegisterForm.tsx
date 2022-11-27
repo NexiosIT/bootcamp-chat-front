@@ -29,8 +29,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 		const password = data.get("password")?.toString();
 		const confirmPassword = data.get("confirm-password")?.toString();
 
-		console.log("on submit", username, email, password, confirmPassword);
-
 		/** FORMCHECKS */
 		let validForm = true;
 
@@ -64,7 +62,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 			<Typography variant="h4">Sign Up</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
-					defaultValue="Jonathan"
 					margin="normal"
 					required
 					fullWidth
@@ -75,7 +72,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoFocus
 				/>
 				<TextField
-					defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -85,7 +81,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					autoComplete="email"
 				/>
 				<TextField
-					defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
@@ -98,7 +93,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					helperText={errors["password"]}
 				/>
 				<TextField
-					defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth

@@ -145,9 +145,6 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 		[messages]
 	);
 
-	/* 	console.log("selected chat on render", selectedChatroom);
-	console.log("messages on render", messages); */
-
 	return (
 		<AppContext.Provider
 			value={{
