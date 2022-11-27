@@ -15,7 +15,6 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 				isSuccess: true,
 				chatrooms: response.data.map((item: IApiChatroom) => {
 					return {
-						// TODO: real id
 						id: item._id,
 						allowedUsers: item?.allowed_users || [],
 						name: item?.name,
@@ -53,7 +52,6 @@ export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomReques
 
 	try {
 		const response = await axios.post(url, chatroom, { headers: getDefaultHeaders(jwt) });
-		console.log("create room response", response);
 		if (response.data && response.data.allowed_users && response.data.name && response.data._id) {
 			return {
 				isSuccess: true,

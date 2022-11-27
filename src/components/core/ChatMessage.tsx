@@ -4,14 +4,15 @@ import styles from "./ChatMessage.module.css";
 
 interface IChatMessageProps {
 	children: ReactNode;
-  showName?: boolean;
+  showTitle?: boolean;
+  title: ReactNode;
 }
 
-export const ChatMessage = ({ children, showName = true }: IChatMessageProps) => {
+export const ChatMessage = ({ children, showTitle = true, title }: IChatMessageProps) => {
 	return (
 		<Card className={styles.chatMessageCard}>
-			{showName && <Typography variant="h6" component="div">
-				Name
+			{showTitle && <Typography variant="h6" component="div">
+				{title}
 			</Typography>}
 			{children}
 		</Card>

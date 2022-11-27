@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Send } from "@mui/icons-material";
 import { CircularProgress, Grid, IconButton, Input } from "@mui/material";
 import styles from "./ChatInput.module.css";
@@ -12,6 +12,11 @@ interface IChatInputProps {
 export const ChatInput = ({ onSubmitMessage, submitMessageLoading, enabled }: IChatInputProps) => {
 	const [value, setValue] = useState<string>("");
 	const [valid, setValid] = useState<boolean>(false);
+	const textInput = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (textInput.current) textInput.current.focus();
+	});
 
 	useEffect(() => {
 		if (!value || value === "") setValid(false);
@@ -20,11 +25,12 @@ export const ChatInput = ({ onSubmitMessage, submitMessageLoading, enabled }: IC
 
 	const handleClickSubmit = useCallback(() => {
 		onSubmitMessage(value);
+		setValue("");
 	}, [value]);
 
 	const handleInputKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
-			if (e.key === "Enter") onSubmitMessage(value);
+			if (e.key === "Enter") handleClickSubmit();
 		},
 		[value]
 	);
@@ -33,6 +39,7 @@ export const ChatInput = ({ onSubmitMessage, submitMessageLoading, enabled }: IC
 		<Grid container padding={2} paddingTop={1.5} className={styles.chatInputContainer}>
 			<Grid item xs={11}>
 				<Input
+					ref={textInput}
 					onKeyDown={handleInputKeyDown}
 					disabled={!enabled || submitMessageLoading}
 					value={value}

@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormGroup, TextField } from "@mui/material";
+import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useAppContext } from "../../../../contexts/AppContext";
 import styles from "./CreateChatroomModal.module.css";
-import { CreateChatroomRequest } from "../../../../types";
+import { CreateChatroomRequest, IUser } from "../../../../types";
 import { CreateChatroom } from "../../../../api/Chatroom";
 import { useUserContext } from "../../../../contexts";
+import { UserSelect } from "../../../../components/molecules/UserSelect";
 
 interface ICreateChatroomModalProps {}
 
 export const CreateChatroomModal = () => {
-	const { newChatOpen, setNewChatOpen, addChatroom } = useAppContext();
-	const { jwt } = useUserContext();
+	const { newChatOpen, setNewChatOpen, addChatroom, users } = useAppContext();
+	const { jwt, user } = useUserContext();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [submitError, setSubmitError] = useState<string>();
 	const [valid, setValid] = useState<boolean>(false);
 	const [name, setName] = useState<string>("");
-	// this is a hardcoded list of 2 account ids
-	// TODO: Make a component that fetches users & makes a list to select from
-	const [ids] = useState<string[]>(["637a3ce32665c902ebf25b29", "637a498b67dfc022d17a5bd4"]);
+	const [ids, setIds] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (!name || name === "") setValid(false);
+    else if (!ids || ids.length < 2 ) setValid(false);
 		else setValid(true);
-	}, [name]);
+	}, [name, ids]);
 
 	const handleSubmit = async () => {
 		setLoading(true);
@@ -46,12 +46,19 @@ export const CreateChatroomModal = () => {
 		}
 	};
 
+  const handleChangeCheckedUsers = (selectedUsers: IUser[]) => {
+    if (user && user.id) {
+      setIds([user.id, ...selectedUsers.map(user => user.id)])
+    }
+  }
+ 
 	const handleClose = () => {
+    setName("");
 		setNewChatOpen(false);
 	};
 
 	return (
-		<Dialog className={styles.CreateChatroomModal} open={newChatOpen} onClose={() => setNewChatOpen(false)}>
+		<Dialog className={styles.CreateChatroomModal} open={newChatOpen} onClose={handleClose}>
 			<DialogTitle>New Chatroom</DialogTitle>
 			<DialogContent>
 				<TextField
@@ -63,7 +70,9 @@ export const CreateChatroomModal = () => {
 					value={name}
 					onChange={(e) => setName(e.target.value)}
 				/>
-				<div className={styles.userSelectContainer}>User Select</div>
+				<div className={styles.userSelectContainer}>
+          {users ? <UserSelect onChange={handleChangeCheckedUsers} users={users} /> : "No users found"}
+        </div>
 				{submitError && <Alert severity="error">{submitError}</Alert>}
 			</DialogContent>
 			<DialogActions style={{ padding: "20px" }}>

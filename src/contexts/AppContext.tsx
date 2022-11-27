@@ -1,6 +1,7 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback } from "react";
 import { GetMessages } from "../api/Chatmessage";
 import { GetChatrooms } from "../api/Chatroom";
+import { GetUsers } from "../api/User";
 import { CreateChatroomModal } from "../pages/main/components/create-modal/CreateChatroomModal";
 import { IChatmessage, IChatroom, IUser } from "../types";
 import { useUserContext } from "./UserContext";
@@ -18,12 +19,13 @@ export interface IAppContext {
 	messagesError?: string;
 	users?: IUser[];
 	usersLoading: boolean;
+	usersError?: string;
 	selectedChatroom?: IChatroom;
 	setSelectedChatroom: React.Dispatch<React.SetStateAction<IChatroom | undefined>>;
 	newChatOpen: boolean;
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	addChatroom: (chatroom: IChatroom) => void;
-  addMessage: (message: IChatmessage) => void;
+	addMessage: (message: IChatmessage) => void;
 	getMessagesForRoom: (roomId?: string) => IChatmessage[] | null;
 }
 
@@ -41,6 +43,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	const [messagesError, setMessagesError] = useState<string>();
 	const [users, setUsers] = useState<IUser[]>();
 	const [usersLoading, setUsersLoading] = useState<boolean>(false);
+	const [usersError, setUsersError] = useState<string>();
 
 	// Navigation state
 	const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
@@ -80,6 +83,21 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 			setMessagesLoading(false);
 		};
 
+		const fetchUsers = async (jwt: string) => {
+			setUsersLoading(true);
+			setUsersError(undefined);
+
+			const result = await GetUsers(jwt);
+
+			if (result?.isSuccess && result.users) {
+				setUsers(result.users);
+			} else {
+				setUsersError(result.error);
+			}
+
+			setUsersLoading(false);
+		};
+
 		// Do a basic fetch of current chatrooms on login
 		if (jwt && chatrooms === undefined) {
 			fetchRooms(jwt);
@@ -88,9 +106,11 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 		if (jwt && messages === undefined) {
 			fetchMessages(jwt);
 		}
-	}, [jwt, chatrooms, messages]);
 
-	console.log("selected chat on render", selectedChatroom);
+		if (jwt && users === undefined) {
+			fetchUsers(jwt);
+		}
+	}, [jwt, chatrooms, messages]);
 
 	// Global state control functions
 	const addChatroom = useCallback(
@@ -102,6 +122,15 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
 	const addMessage = useCallback(
 		(message: IChatmessage) => {
+			// fix for the return of the create call only having id of the chatroom
+			// fill in other fields from the stored chatroom array
+			const chatroomId = message.chatroom.id;
+			const foundChatroom = chatrooms ? chatrooms.find((room) => room.id === chatroomId) : null;
+
+			if (foundChatroom) {
+				message.chatroom = foundChatroom;
+			}
+
 			setMessages([...(messages || []), message]);
 		},
 		[setMessages, messages]
@@ -127,12 +156,13 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				messagesError,
 				users,
 				usersLoading,
+				usersError,
 				selectedChatroom,
 				setSelectedChatroom,
 				newChatOpen,
 				setNewChatOpen,
 				addChatroom,
-        addMessage,
+				addMessage,
 				getMessagesForRoom,
 			}}
 		>
