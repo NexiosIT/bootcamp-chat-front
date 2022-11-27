@@ -10,7 +10,7 @@ interface IChatViewProps {
 }
 
 export const ChatView = ({ onSubmitMessage, submitMessageLoading }: IChatViewProps) => {
-	const { selectedChatroom, getMessagesForRoom } = useAppContext();
+	const { selectedChatroom, getMessagesForRoom, users } = useAppContext();
   const { user } = useUserContext();
 
 	const isInputEnabled = useMemo(() => {
@@ -24,7 +24,7 @@ export const ChatView = ({ onSubmitMessage, submitMessageLoading }: IChatViewPro
 	return (
 		<div className={styles.chatViewContainer}>
 			<ChatViewHeader selectedChat={selectedChatroom} />
-			<ChatHistory userId={user?.id} messages={messages} />
+			<ChatHistory users={users} userId={user?.id} messages={messages} />
 			<ChatInput
 				enabled={isInputEnabled}
 				submitMessageLoading={submitMessageLoading}

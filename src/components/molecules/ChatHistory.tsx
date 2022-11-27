@@ -2,16 +2,17 @@ import React from "react";
 import classNames from "classnames";
 import { ChatMessage } from "../core/ChatMessage";
 import styles from "./ChatHistory.module.css";
-import { IChatmessage } from "../../types";
+import { IChatmessage, IUser } from "../../types";
 import { Typography } from "@mui/material";
 import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../vars/messages";
 
 interface IChatHistoryProps {
 	messages: IChatmessage[] | null;
-  userId?: string;
+	userId?: string;
+	users?: IUser[];
 }
 
-export const ChatHistory = ({ messages, userId }: IChatHistoryProps) => {
+export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 	const renderMessages = (messages: IChatmessage[]) => {
 		if (messages.length === 0)
 			return (
@@ -27,9 +28,13 @@ export const ChatHistory = ({ messages, userId }: IChatHistoryProps) => {
 					const isSameSenderAsLast =
 						messages[index + 1] !== undefined && messages[index + 1].user === messages[index].user;
 
+					const foundUser = users?.find((user) => user.id === message.user);
+
 					return (
 						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage })}>
-							<ChatMessage title="- Name -" showTitle={!isSameSenderAsLast}>{message.data}</ChatMessage>
+							<ChatMessage title={foundUser ? foundUser.username : ""} showTitle={!isSameSenderAsLast}>
+								{message.data}
+							</ChatMessage>
 						</div>
 					);
 				})}

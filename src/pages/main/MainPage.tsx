@@ -24,8 +24,6 @@ export const MainPage = () => {
 
       const response = await CreateMessage(jwt, request);
 
-      console.log("response", response)
-
       if (response.message) addMessage(response.message);
 
     }

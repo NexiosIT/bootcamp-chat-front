@@ -17,12 +17,13 @@ export const CreateChatroomModal = () => {
 	const [name, setName] = useState<string>("");
 	// this is a hardcoded list of 2 account ids
 	// TODO: Make a component that fetches users & makes a list to select from
-	const [ids, setIds] = useState<string[]>(["637a498b67dfc022d17a5bd4"]);
+	const [ids, setIds] = useState<string[]>([]);
 
   useEffect(() => {
     // logged in user has changed, set id list accordingly
     // hardcoded second // TODO
-    const ids = ["6383974c5be551702183e66d"];
+    // hardcoded 3rd for group chat testing
+    const ids = ["6383974c5be551702183e66d", "6383b5615be551702183e765"];
     if (user && user.id) ids.push(user.id)
     setIds(ids)
   }, [user])

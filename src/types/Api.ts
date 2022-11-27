@@ -19,6 +19,10 @@ export interface GetUserResult extends ApiResultBase {
   user?: IUser;
 }
 
+export interface GetUsersResult extends ApiResultBase {
+  users?: IUser[];
+}
+
 // Chatroom api
 export interface GetChatroomsResult extends ApiResultBase {
   chatrooms?: IChatroom[]

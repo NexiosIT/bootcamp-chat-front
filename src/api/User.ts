@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetUserResult, LoginResult, RegisterResult } from "../types";
+import { GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
@@ -77,6 +77,39 @@ export const GetUser = async (jwt: string): Promise<GetUserResult> => {
 					username: response.data?.username,
 					initials: response.data?.username.charAt(0),
 				},
+			};
+		}
+
+		return DEFAULT_ERROR_RESULT;
+	} catch (e) {
+		if (axios.isAxiosError(e)) {
+			return {
+				isSuccess: false,
+				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
+			};
+		} else {
+			return DEFAULT_ERROR_RESULT;
+		}
+	}
+};
+
+export const GetUsers = async (jwt: string): Promise<GetUsersResult> => {
+	const url = getApiBaseUrl() + "/users";
+
+	try {
+		const response = await axios.get(url, { headers: getDefaultHeaders(jwt) });
+
+		if (response.data && Array.isArray(response.data)) {
+			return {
+				isSuccess: true,
+				users: response.data.map((user: IApiUser) => {
+					return {
+						id: user._id,
+						email: user.email,
+						username: user.username,
+						initials: user.username.charAt(0),
+					};
+				}),
 			};
 		}
 
