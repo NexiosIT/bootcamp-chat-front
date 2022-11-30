@@ -26,6 +26,7 @@ export interface IAppContext {
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	addChatroom: (chatroom: IChatroom) => void;
 	addMessage: (message: IChatmessage) => void;
+	removeMessage: (message: IChatmessage) => void;
 	getMessagesForRoom: (roomId?: string) => IChatmessage[] | null;
 }
 
@@ -133,7 +134,14 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
 			setMessages([...(messages || []), message]);
 		},
-		[setMessages, messages]
+		[messages]
+	);
+
+	const removeMessage = useCallback(
+		(message: IChatmessage) => {
+			setMessages(messages?.filter((msg) => msg.id !== message.id));
+		},
+		[messages]
 	);
 
 	// Memoized data getters
@@ -163,6 +171,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				setNewChatOpen,
 				addChatroom,
 				addMessage,
+				removeMessage,
 				getMessagesForRoom,
 			}}
 		>

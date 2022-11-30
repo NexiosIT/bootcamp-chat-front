@@ -18,9 +18,7 @@ export const ChatView = ({ onSubmitMessage, submitMessageLoading }: IChatViewPro
 	}, [selectedChatroom]);
 
 	let messages = getMessagesForRoom(selectedChatroom?.id);
-
-	console.log("messages for chat view", messages);
-
+  
 	return (
 		<div className={styles.chatViewContainer}>
 			<ChatViewHeader selectedChat={selectedChatroom} />

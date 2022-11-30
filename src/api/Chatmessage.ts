@@ -1,5 +1,11 @@
 import axios from "axios";
-import { CreateMessageRequest, CreateMessageResult, GetMessagesResult, IApiChatmessage } from "../types";
+import {
+	CreateMessageRequest,
+	CreateMessageResult,
+	DeleteMessageResult,
+	GetMessagesResult,
+	IApiChatmessage,
+} from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
@@ -89,13 +95,26 @@ export const CreateMessage = async (jwt: string, message: CreateMessageRequest):
 	}
 };
 
-export const DeleteMessage = async (id: string) => {
+export const DeleteMessage = async (jwt: string, id: string): Promise<DeleteMessageResult> => {
 	const url = getApiBaseUrl() + `/messages/${id}`;
 
 	try {
-		const response = await axios.delete(url);
-		console.log("delete message response", response);
+		const response = await axios.delete(url, { headers: getDefaultHeaders(jwt) });
+		if (response.status === 200) {
+			return {
+				isSuccess: true,
+			};
+		}
+
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		console.log("delete message error", e);
+		if (axios.isAxiosError(e)) {
+			return {
+				isSuccess: false,
+				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
+			};
+		} else {
+			return DEFAULT_ERROR_RESULT;
+		}
 	}
 };

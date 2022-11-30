@@ -3,8 +3,12 @@ import classNames from "classnames";
 import { ChatMessage } from "../core/ChatMessage";
 import styles from "./ChatHistory.module.css";
 import { IChatmessage, IUser } from "../../types";
-import { Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../vars/messages";
+import { Delete } from "@mui/icons-material";
+import { DeleteMessage } from "../../api/Chatmessage";
+import { useUserContext } from "../../contexts";
+import { useAppContext } from "../../contexts/AppContext";
 
 interface IChatHistoryProps {
 	messages: IChatmessage[] | null;
@@ -13,6 +17,21 @@ interface IChatHistoryProps {
 }
 
 export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
+	const { jwt } = useUserContext();
+	const { removeMessage } = useAppContext();
+
+	const handleClickDeleteMessage = async (message: IChatmessage) => {
+		if (jwt) {
+      console.log("deleting message: ", message)
+			const result = await DeleteMessage(jwt, message.id);
+      console.log("result", result)
+			if (result.isSuccess) {
+        // remove the message from data store
+				removeMessage(message);
+			}
+		}
+	};
+
 	const renderMessages = (messages: IChatmessage[]) => {
 		if (messages.length === 0)
 			return (
@@ -35,6 +54,13 @@ export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 							<ChatMessage title={foundUser ? foundUser.username : ""} showTitle={!isSameSenderAsLast}>
 								{message.data}
 							</ChatMessage>
+							{isMyMessage && (
+								<div className={styles.deleteMessage}>
+									<IconButton size="small" color="error" onClick={() => handleClickDeleteMessage(message)}>
+										<Delete fontSize="small"/>
+									</IconButton>
+								</div>
+							)}
 						</div>
 					);
 				})}
