@@ -4,28 +4,28 @@ import styles from "./ChatListItem.module.css";
 import { IChatroom } from "../../types";
 
 interface IChatListItemProps {
-	primaryContent: ReactNode;
-	secondaryContent?: ReactNode;
-	avatarContent?: ReactNode;
+	primary: ReactNode;
+	secondary?: ReactNode;
+	avatar?: ReactNode;
 	onClick: () => void;
 	selected: boolean;
 }
 
 export const ChatListItem = ({
-	primaryContent,
-	secondaryContent,
+	primary,
+	secondary,
 	onClick,
 	selected,
-	avatarContent,
+	avatar,
 }: IChatListItemProps) => {
 	return (
 		<ListItem selected={selected} onClick={onClick} className={styles.chatListItemContainer}>
 			<ListItemAvatar>
 				<Avatar>
-					<Typography>{avatarContent}</Typography>
+					<Typography>{avatar}</Typography>
 				</Avatar>
 			</ListItemAvatar>
-			<ListItemText primary={primaryContent} secondary={secondaryContent} />
+			<ListItemText primary={primary} secondary={secondary} />
 		</ListItem>
 	);
 };
