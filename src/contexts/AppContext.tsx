@@ -123,7 +123,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
       console.log("setting up websocket");
   
-      webSocket.current = new WebSocket("ws://localhost:3001/ws");
+      webSocket.current = new WebSocket("ws://localhost:3001");
   
       webSocket.current.onopen = () => {
         console.log("websocket opened")
