@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { GetMessages } from "../api/Chatmessage";
 import { GetChatrooms } from "../api/Chatroom";
 import { GetUsers } from "../api/User";
@@ -26,6 +26,7 @@ export interface IAppContext {
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	addChatroom: (chatroom: IChatroom) => void;
 	addMessage: (message: IChatmessage) => void;
+	removeMessage: (message: IChatmessage) => void;
 	getMessagesForRoom: (roomId?: string) => IChatmessage[] | null;
 }
 
@@ -45,6 +46,9 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	const [usersLoading, setUsersLoading] = useState<boolean>(false);
 	const [usersError, setUsersError] = useState<string>();
 
+  // Websocket reference
+  const webSocket = useRef<WebSocket | null>(null);
+
 	// Navigation state
 	const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
 
@@ -52,6 +56,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	const [newChatOpen, setNewChatOpen] = useState<boolean>(false);
 
 	// Effects
+  // Fetch data
 	useEffect(() => {
 		const fetchRooms = async (jwt: string) => {
 			setChatroomsLoading(true);
@@ -110,7 +115,38 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 		if (jwt && users === undefined) {
 			fetchUsers(jwt);
 		}
-	}, [jwt, chatrooms, messages]);
+	}, [jwt, chatrooms, messages, users]);
+
+  // Set up websocket
+  useEffect(() => {
+    if (jwt) {
+
+      console.log("setting up websocket");
+  
+      webSocket.current = new WebSocket("ws://localhost:3001");
+  
+      webSocket.current.onopen = () => {
+        console.log("websocket opened")
+      }
+  
+      webSocket.current.onclose = () => {
+        console.log("websocket closed")
+      }
+      
+      webSocket.current.onmessage = (ev: MessageEvent<any>) => {
+        console.log("received message", ev)
+      }
+    }
+
+    // return cleanup function
+    return () => {
+      if (webSocket.current) {
+        console.log("demount, closing websocket")
+        webSocket.current.close();
+      }
+    }
+
+  }, [jwt])
 
 	// Global state control functions
 	const addChatroom = useCallback(
@@ -133,7 +169,14 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
 			setMessages([...(messages || []), message]);
 		},
-		[setMessages, messages]
+		[messages]
+	);
+
+	const removeMessage = useCallback(
+		(message: IChatmessage) => {
+			setMessages(messages?.filter((msg) => msg.id !== message.id));
+		},
+		[messages]
 	);
 
 	// Memoized data getters
@@ -163,6 +206,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				setNewChatOpen,
 				addChatroom,
 				addMessage,
+				removeMessage,
 				getMessagesForRoom,
 			}}
 		>

@@ -10,10 +10,19 @@
   padding: 20px 50px;
 }
 
+.deleteMessage {
+  width: 40px;
+  visibility: hidden;
+}
+
 .chatHistoryEntry {
   display: flex;
   width: 100%;
   margin-bottom: 4px;
+}
+
+.chatHistoryEntry:hover .deleteMessage {
+  visibility: visible;
 }
 
 .chatHistoryEntry.isMine {

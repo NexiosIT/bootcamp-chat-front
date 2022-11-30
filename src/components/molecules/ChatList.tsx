@@ -27,9 +27,9 @@ export const ChatList = ({ chatrooms = [], selectedChat, onSelectChat }: IChatLi
 							<ChatListItem
 								selected={selectedChat?.id === chatroom.id}
 								onClick={() => onSelectChat(chatroom)}
-								avatarContent={avatar}
-								primaryContent={primary}
-								secondaryContent={secondary}
+								avatar={avatar}
+								primary={primary}
+								secondary={secondary}
 							/>
 							{index !== chatrooms.length - 1 && <Divider />}
 						</div>
