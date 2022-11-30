@@ -6,7 +6,7 @@ export interface IChatDisplayData {
 	secondary: string;
 }
 
-export const getChatDisplayData = (chatroom: IChatroom, users: IUser[], userId?: string,): IChatDisplayData => {
+export const getChatDisplayData = (chatroom: IChatroom, users: IUser[], userId?: string): IChatDisplayData => {
 	let avatar = "";
 	let primary = "";
 	let secondary = "";
@@ -39,4 +39,19 @@ export const getChatDisplayData = (chatroom: IChatroom, users: IUser[], userId?:
 		primary,
 		secondary,
 	};
+};
+
+export const filterChatrooms = (rooms: IChatroom[], filter: string, users: IUser[], userId: string): IChatroom[] => {
+	if (filter === "") return rooms;
+	return rooms.filter((room) => {
+		// if 2 person chat, look for the other user's name and filter for that
+		if (room.allowedUsers.length === 2) {
+			const foundId = room.allowedUsers.find((id) => id !== userId);
+			const foundUser = users.find((user) => user.id === foundId);
+			return foundUser && foundUser.username.toLowerCase().includes(filter.toLowerCase());
+		}
+
+		// if group chat, check for chat name
+		return room.name.toLowerCase().includes(filter.toLowerCase());
+	});
 };
