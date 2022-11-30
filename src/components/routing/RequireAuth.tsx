@@ -4,7 +4,7 @@ import { useUserContext } from "../../contexts";
 import { PATH_LOGIN } from "../../pages/routes";
 
 export const RequireAuth = () => {
-  const { user } = useUserContext();
+  const { user, jwt } = useUserContext();
   const isAuthenticated = user !== undefined;
   const location = useLocation();
 

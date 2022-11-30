@@ -1,20 +1,31 @@
-import React from "react";
-import { Avatar, Grid, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import React, { ReactNode } from "react";
+import { Avatar, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import styles from "./ChatListItem.module.css";
+import { IChatroom } from "../../types";
 
-export const ChatListItem = () => {
+interface IChatListItemProps {
+	primary: ReactNode;
+	secondary?: ReactNode;
+	avatar?: ReactNode;
+	onClick: () => void;
+	selected: boolean;
+}
+
+export const ChatListItem = ({
+	primary,
+	secondary,
+	onClick,
+	selected,
+	avatar,
+}: IChatListItemProps) => {
 	return (
-		<ListItem className={styles.chatListItemContainer}>
+		<ListItem selected={selected} onClick={onClick} className={styles.chatListItemContainer}>
 			<ListItemAvatar>
-				<Avatar>JD</Avatar>
+				<Avatar>
+					<Typography>{avatar}</Typography>
+				</Avatar>
 			</ListItemAvatar>
-			<ListItemText 
-        primary="John Deere"
-        secondary="Bla bla bla bla bla bla"
-      />
-		{/* 	<Grid item xs={2}>
-				<Typography variant="body2">17:30</Typography>
-			</Grid> */}
+			<ListItemText primary={primary} secondary={secondary} />
 		</ListItem>
 	);
 };

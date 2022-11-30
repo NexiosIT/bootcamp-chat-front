@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Link } from "@mui/material";
+import { Alert, Box, Button, TextField, Typography, Link } from "@mui/material";
 import styles from "./RegisterForm.module.css";
-import { RegisterUser } from "../../../api/RegisterUser";
 import { PATH_LOGIN } from "../../routes";
+import { RegisterUser } from "../../../api/User";
+import { useNavigate } from "react-router-dom";
 
 interface IRegisterFormProps {
 	onSuccess: () => void;
@@ -11,10 +12,14 @@ interface IRegisterFormProps {
 export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errors, setErrors] = useState<{ [key: string]: string }>({});
+	const [submitError, setSubmitError] = useState<string>();
+
+	const navigate = useNavigate();
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		setErrors({});
+		setSubmitError(undefined);
 		setLoading(true);
 
 		const data = new FormData(event.currentTarget);
@@ -23,8 +28,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 		const email = data.get("email")?.toString();
 		const password = data.get("password")?.toString();
 		const confirmPassword = data.get("confirm-password")?.toString();
-
-		console.log("on submit", username, email, password, confirmPassword);
 
 		/** FORMCHECKS */
 		let validForm = true;
@@ -43,12 +46,13 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 
 		if (validForm && username && email && password) {
 			const result = await RegisterUser(username, email, password);
-      if (result.isSuccess) {
-        // register was a success, call success callback
-        onSuccess();
-      }else {
-        // register failed, display error: TODO
-      }
+
+			if (!result.isSuccess) {
+				setSubmitError(result.error);
+			} else {
+				// register was a succes, reroute to login page
+				navigate(PATH_LOGIN, { replace: true });
+			}
 		}
 		setLoading(false);
 	};
@@ -96,10 +100,11 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 					label="Confirm Password"
 					type="password"
 					id="confirm-password"
-          autoComplete="confirm-password"
+					autoComplete="confirm-password"
 					error={!!errors["confirm-password"]}
 					helperText={errors["confirm-password"]}
 				/>
+				{submitError && <Alert severity="error">{submitError}</Alert>}
 				<Button disabled={loading} type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
 					Sign Up
 				</Button>

@@ -3,6 +3,7 @@ import { ThemeProvider } from "@mui/system";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { UserContextProvider } from "./contexts";
+import { AppContextProvider } from "./contexts/AppContext";
 import "./index.css";
 import App from "./pages/App";
 
@@ -12,11 +13,13 @@ const theme = createTheme();
 
 root.render(
 	<React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <UserContextProvider>
-        <App />
-      </UserContextProvider>
-    </ThemeProvider>
+		<ThemeProvider theme={theme}>
+			<UserContextProvider>
+				<AppContextProvider>
+					<App />
+				</AppContextProvider>
+			</UserContextProvider>
+		</ThemeProvider>
 	</React.StrictMode>
 );
 
