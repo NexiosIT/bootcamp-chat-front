@@ -8,7 +8,6 @@ import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../vars/messages";
 import { Delete } from "@mui/icons-material";
 import { DeleteMessage } from "../../api/Chatmessage";
 import { useUserContext } from "../../contexts";
-import { useAppContext } from "../../contexts/AppContext";
 
 interface IChatHistoryProps {
 	messages: IChatmessage[] | null;

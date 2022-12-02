@@ -29,7 +29,7 @@ export interface IAppContext {
 const AppContext = createContext<IAppContext | null>(null);
 
 export const AppContextProvider = ({ children }: IProviderProps) => {
-	const { jwt } = useUserContext();
+	const { jwt, user } = useUserContext();
 
 	// App data states
 	const [appLoading, setAppLoading] = useState<boolean>(false);
@@ -48,6 +48,66 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 
 	// UI states
 	const [newChatOpen, setNewChatOpen] = useState<boolean>(false);
+
+	// Websocket setup
+	const setupWebsocket = useCallback(() => {
+		if (jwt) {
+			if (webSocket.current) webSocket.current.close();
+
+			webSocket.current = new WebSocket("ws://localhost:3001");
+
+			webSocket.current.onopen = () => {
+				console.log("Websocket: Connection Opened.");
+			};
+
+			webSocket.current.onclose = () => {
+				console.log("Websocket: Connection Closed.");
+			};
+
+			webSocket.current.onmessage = (ev: MessageEvent<any>) => {
+				if (ev && ev.data) {
+					const msg: IWSMessage = JSON.parse(ev.data);
+					console.log("Websocket: Message Received.", msg);
+					switch (msg.event) {
+						case "new_message": {
+							const newMessage: IChatmessage = mapApiMessage(msg.data);
+							setMessages((prev) => [...(prev || []), newMessage]);
+
+							// add new unread message to chatroom array
+							setChatrooms((prev) =>
+								prev?.map((room) => {
+									if (room.id === newMessage.chatroom) {
+										return {
+											...room,
+											unreadMessages: room.unreadMessages + 1,
+										};
+									}
+									return room;
+								})
+							);
+
+							break;
+						}
+						case "new_chatroom": {
+							const newChatroom: IChatroom = mapApiChatroom(msg.data);
+							setChatrooms((prev) => [...(prev || []), newChatroom]);
+							break;
+						}
+						case "new_user": {
+							const newUser: IUser = mapApiUser(msg.data);
+							setUsers((prev) => [...(prev || []), newUser]);
+							break;
+						}
+						case "delete_message": {
+							const messageId = msg.data?.id;
+							if (messageId) setMessages((prev) => (prev || []).filter((message) => message.id !== messageId));
+							break;
+						}
+					}
+				}
+			};
+		}
+	}, [jwt]);
 
 	// Effects
 	// Fetch data
@@ -94,51 +154,28 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 				setupWebsocket();
 			});
 		}
-	}, [jwt]);
 
-	// Websocket setup
-	const setupWebsocket = () => {
-		if (jwt && !webSocket.current) {
-			webSocket.current = new WebSocket("ws://localhost:3001");
+		return () => {
+			if (webSocket.current) webSocket.current.close();
+		};
+	}, [jwt, webSocket, setupWebsocket]);
 
-			webSocket.current.onopen = () => {
-				console.log("Websocket: Connection Opened.");
-			};
+	// effect to clear out any unneeded unread messages counts every time a change occurs
+	useEffect(() => {
+		let changed = false;
 
-			webSocket.current.onclose = () => {
-				console.log("Websocket: Connection Closed.");
-			};
+		const tempRooms = chatrooms?.map((room) => {
+			// if any unread messages on selected room, clear them
+			if (selectedChatroom && room.unreadMessages > 0 && room.id === selectedChatroom.id) {
+				changed = true;
+				return { ...room, unreadMessages: 0 };
+			}
 
-			webSocket.current.onmessage = (ev: MessageEvent<any>) => {
-				if (ev && ev.data) {
-					const msg: IWSMessage = JSON.parse(ev.data);
-					console.log("Websocket: Message Received.", msg);
-					switch (msg.event) {
-						case "new_message": {
-							const newMessage: IChatmessage = mapApiMessage(msg.data);
-							setMessages((prev) => [...(prev || []), newMessage]);
-							break;
-						}
-						case "new_chatroom": {
-							const newChatroom: IChatroom = mapApiChatroom(msg.data);
-							setChatrooms((prev) => [...(prev || []), newChatroom]);
-							break;
-						}
-						case "new_user": {
-							const newUser: IUser = mapApiUser(msg.data);
-							setUsers((prev) => [...(prev || []), newUser]);
-							break;
-						}
-						case "delete_message": {
-							const messageId = msg.data?.id;
-							if (messageId) setMessages((prev) => (prev || []).filter((message) => message.id !== messageId));
-							break;
-						}
-					}
-				}
-			};
-		}
-	};
+			return room;
+		});
+
+		if (changed) setChatrooms(tempRooms);
+	}, [chatrooms, selectedChatroom, user]);
 
 	// Memoized data getters
 	const getMessagesForRoom = useCallback(

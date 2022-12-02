@@ -6,9 +6,7 @@ import { useUserContext } from "../../../../contexts";
 import { IChatroom } from "../../../../types";
 import { filterChatrooms } from "../../../../utils/data";
 
-interface ISidebarProps {}
-
-export const Sidebar = ({}: ISidebarProps) => {
+export const Sidebar = () => {
 	const { chatrooms, setNewChatOpen, selectedChatroom, setSelectedChatroom, users } = useAppContext();
 	const { signOut, user } = useUserContext();
 
@@ -20,10 +18,6 @@ export const Sidebar = ({}: ISidebarProps) => {
 
 	const handleClickNewChat = () => {
 		setNewChatOpen(true);
-	};
-
-	const handleSelectChat = (room: IChatroom) => {
-		setSelectedChatroom(room);
 	};
 
 	const filteredChatrooms: IChatroom[] | undefined = useMemo(() => {
@@ -38,7 +32,7 @@ export const Sidebar = ({}: ISidebarProps) => {
 		<div className={styles.sidebarContainer}>
 			<SidebarHeader onClickNewChat={handleClickNewChat} onSignOut={handleSignOut} />
 			<SidebarSearch value={searchValue} onChange={setSearchValue} />
-			<ChatList selectedChat={selectedChatroom} onSelectChat={handleSelectChat} chatrooms={filteredChatrooms} />
+			<ChatList selectedChat={selectedChatroom} onSelectChat={setSelectedChatroom} chatrooms={filteredChatrooms} />
 		</div>
 	);
 };

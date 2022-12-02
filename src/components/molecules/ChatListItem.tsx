@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react";
-import { Avatar, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
+import { Avatar, Badge, ListItem, ListItemAvatar, ListItemText, Typography } from "@mui/material";
 import styles from "./ChatListItem.module.css";
-import { IChatroom } from "../../types";
 
 interface IChatListItemProps {
 	primary: ReactNode;
@@ -9,6 +8,7 @@ interface IChatListItemProps {
 	avatar?: ReactNode;
 	onClick: () => void;
 	selected: boolean;
+	newMessages?: number;
 }
 
 export const ChatListItem = ({
@@ -17,7 +17,19 @@ export const ChatListItem = ({
 	onClick,
 	selected,
 	avatar,
+	newMessages = 0,
 }: IChatListItemProps) => {
+	const primaryContent = (
+		<span>
+			{primary}
+			{newMessages > 0 && (
+				<span className={styles.newMessagesContainer}>
+					<Badge badgeContent={newMessages} color="primary" />
+				</span>
+			)}
+		</span>
+	);
+
 	return (
 		<ListItem selected={selected} onClick={onClick} className={styles.chatListItemContainer}>
 			<ListItemAvatar>
@@ -25,7 +37,7 @@ export const ChatListItem = ({
 					<Typography>{avatar}</Typography>
 				</Avatar>
 			</ListItemAvatar>
-			<ListItemText primary={primary} secondary={secondary} />
+			<ListItemText primary={primaryContent} secondary={secondary} />
 		</ListItem>
 	);
 };
