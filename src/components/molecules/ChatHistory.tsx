@@ -18,17 +18,11 @@ interface IChatHistoryProps {
 
 export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 	const { jwt } = useUserContext();
-	const { removeMessage } = useAppContext();
 
 	const handleClickDeleteMessage = async (message: IChatmessage) => {
 		if (jwt) {
-      console.log("deleting message: ", message)
-			const result = await DeleteMessage(jwt, message.id);
-      console.log("result", result)
-			if (result.isSuccess) {
-        // remove the message from data store
-				removeMessage(message);
-			}
+			await DeleteMessage(jwt, message.id);
+			// websocket will delete message if succesfull
 		}
 	};
 
@@ -57,7 +51,7 @@ export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 							{isMyMessage && (
 								<div className={styles.deleteMessage}>
 									<IconButton size="small" color="error" onClick={() => handleClickDeleteMessage(message)}>
-										<Delete fontSize="small"/>
+										<Delete fontSize="small" />
 									</IconButton>
 								</div>
 							)}

@@ -1,9 +1,10 @@
 import React, { createContext, ReactNode, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { GetMessages } from "../api/Chatmessage";
 import { GetChatrooms } from "../api/Chatroom";
+import { mapApiChatroom, mapApiMessage, mapApiUser } from "../api/mappers";
 import { GetUsers } from "../api/User";
 import { CreateChatroomModal } from "../pages/main/components/create-modal/CreateChatroomModal";
-import { IChatmessage, IChatroom, IUser } from "../types";
+import { IChatmessage, IChatroom, IUser, IWSMessage } from "../types";
 import { useUserContext } from "./UserContext";
 
 interface IProviderProps {
@@ -12,21 +13,16 @@ interface IProviderProps {
 
 export interface IAppContext {
 	chatrooms?: IChatroom[];
-	chatroomsLoading: boolean;
 	chatroomsError?: string;
 	messages?: IChatmessage[];
-	messagesLoading: boolean;
 	messagesError?: string;
 	users?: IUser[];
-	usersLoading: boolean;
 	usersError?: string;
+	appLoading: boolean;
 	selectedChatroom?: IChatroom;
 	setSelectedChatroom: React.Dispatch<React.SetStateAction<IChatroom | undefined>>;
 	newChatOpen: boolean;
 	setNewChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	addChatroom: (chatroom: IChatroom) => void;
-	addMessage: (message: IChatmessage) => void;
-	removeMessage: (message: IChatmessage) => void;
 	getMessagesForRoom: (roomId?: string) => IChatmessage[] | null;
 }
 
@@ -36,18 +32,16 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	const { jwt } = useUserContext();
 
 	// App data states
+	const [appLoading, setAppLoading] = useState<boolean>(false);
 	const [chatrooms, setChatrooms] = useState<IChatroom[]>();
-	const [chatroomsLoading, setChatroomsLoading] = useState<boolean>(false);
 	const [chatroomsError, setChatroomsError] = useState<string>();
 	const [messages, setMessages] = useState<IChatmessage[]>();
-	const [messagesLoading, setMessagesLoading] = useState<boolean>(false);
 	const [messagesError, setMessagesError] = useState<string>();
 	const [users, setUsers] = useState<IUser[]>();
-	const [usersLoading, setUsersLoading] = useState<boolean>(false);
 	const [usersError, setUsersError] = useState<string>();
 
-  // Websocket reference
-  const webSocket = useRef<WebSocket | null>(null);
+	// Websocket reference
+	const webSocket = useRef<WebSocket | null>(null);
 
 	// Navigation state
 	const [selectedChatroom, setSelectedChatroom] = useState<IChatroom>();
@@ -56,134 +50,101 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	const [newChatOpen, setNewChatOpen] = useState<boolean>(false);
 
 	// Effects
-  // Fetch data
+	// Fetch data
 	useEffect(() => {
-		const fetchRooms = async (jwt: string) => {
-			setChatroomsLoading(true);
+		const fetchData = async (jwt: string) => {
+			setAppLoading(true);
+
+			setUsersError(undefined);
 			setChatroomsError(undefined);
-
-			const result = await GetChatrooms(jwt);
-
-			if (result.isSuccess && result.chatrooms) {
-				setChatrooms(result.chatrooms);
-			} else {
-				setChatroomsError(result.error);
-			}
-
-			setChatroomsLoading(false);
-		};
-
-		const fetchMessages = async (jwt: string) => {
-			setMessagesLoading(true);
 			setMessagesError(undefined);
 
-			const result = await GetMessages(jwt);
+			// users
+			const userResult = await GetUsers(jwt);
 
-			if (result.isSuccess && result.messages) {
-				setMessages(result.messages);
+			if (userResult?.isSuccess && userResult.users) {
+				setUsers(userResult.users);
 			} else {
-				setMessagesError(result.error);
+				setUsersError(userResult.error);
 			}
 
-			setMessagesLoading(false);
+			// rooms
+			const roomResult = await GetChatrooms(jwt);
+
+			if (roomResult.isSuccess && roomResult.chatrooms) {
+				setChatrooms(roomResult.chatrooms);
+			} else {
+				setChatroomsError(roomResult.error);
+			}
+
+			// messages
+			const messageResult = await GetMessages(jwt);
+
+			if (messageResult.isSuccess && messageResult.messages) {
+				setMessages(messageResult.messages);
+			} else {
+				setMessagesError(messageResult.error);
+			}
+
+			setAppLoading(false);
 		};
 
-		const fetchUsers = async (jwt: string) => {
-			setUsersLoading(true);
-			setUsersError(undefined);
-
-			const result = await GetUsers(jwt);
-
-			if (result?.isSuccess && result.users) {
-				setUsers(result.users);
-			} else {
-				setUsersError(result.error);
-			}
-
-			setUsersLoading(false);
-		};
-
-		// Do a basic fetch of current chatrooms on login
-		if (jwt && chatrooms === undefined) {
-			fetchRooms(jwt);
+		if (jwt) {
+			fetchData(jwt).then(() => {
+				setupWebsocket();
+			});
 		}
+	}, [jwt]);
 
-		if (jwt && messages === undefined) {
-			fetchMessages(jwt);
+	// Websocket setup
+	const setupWebsocket = () => {
+		if (jwt && !webSocket.current) {
+			webSocket.current = new WebSocket("ws://localhost:3001");
+
+			webSocket.current.onopen = () => {
+				console.log("Websocket: Connection Opened.");
+			};
+
+			webSocket.current.onclose = () => {
+				console.log("Websocket: Connection Closed.");
+			};
+
+			webSocket.current.onmessage = (ev: MessageEvent<any>) => {
+				if (ev && ev.data) {
+					const msg: IWSMessage = JSON.parse(ev.data);
+					console.log("Websocket: Message Received.", msg);
+					switch (msg.event) {
+						case "new_message": {
+							const newMessage: IChatmessage = mapApiMessage(msg.data);
+							setMessages((prev) => [...(prev || []), newMessage]);
+							break;
+						}
+						case "new_chatroom": {
+							const newChatroom: IChatroom = mapApiChatroom(msg.data);
+							setChatrooms((prev) => [...(prev || []), newChatroom]);
+							break;
+						}
+						case "new_user": {
+							const newUser: IUser = mapApiUser(msg.data);
+							setUsers((prev) => [...(prev || []), newUser]);
+							break;
+						}
+						case "delete_message": {
+							const messageId = msg.data?.id;
+							if (messageId) setMessages((prev) => (prev || []).filter((message) => message.id !== messageId));
+							break;
+						}
+					}
+				}
+			};
 		}
-
-		if (jwt && users === undefined) {
-			fetchUsers(jwt);
-		}
-	}, [jwt, chatrooms, messages, users]);
-
-  // Set up websocket
-  useEffect(() => {
-    if (jwt) {
-
-      console.log("setting up websocket");
-  
-      webSocket.current = new WebSocket("ws://localhost:3001");
-  
-      webSocket.current.onopen = () => {
-        console.log("websocket opened")
-      }
-  
-      webSocket.current.onclose = () => {
-        console.log("websocket closed")
-      }
-      
-      webSocket.current.onmessage = (ev: MessageEvent<any>) => {
-        console.log("received message", ev)
-      }
-    }
-
-    // return cleanup function
-    return () => {
-      if (webSocket.current) {
-        console.log("demount, closing websocket")
-        webSocket.current.close();
-      }
-    }
-
-  }, [jwt])
-
-	// Global state control functions
-	const addChatroom = useCallback(
-		(chatroom: IChatroom) => {
-			setChatrooms([...(chatrooms || []), chatroom]);
-		},
-		[setChatrooms, chatrooms]
-	);
-
-	const addMessage = useCallback(
-		(message: IChatmessage) => {
-			// fix for the return of the create call only having id of the chatroom
-			// fill in other fields from the stored chatroom array
-			const chatroomId = message.chatroom.id;
-			const foundChatroom = chatrooms ? chatrooms.find((room) => room.id === chatroomId) : null;
-
-			if (foundChatroom) {
-				message.chatroom = foundChatroom;
-			}
-
-			setMessages([...(messages || []), message]);
-		},
-		[messages]
-	);
-
-	const removeMessage = useCallback(
-		(message: IChatmessage) => {
-			setMessages(messages?.filter((msg) => msg.id !== message.id));
-		},
-		[messages]
-	);
+	};
 
 	// Memoized data getters
 	const getMessagesForRoom = useCallback(
 		(roomId?: string): IChatmessage[] | null => {
 			if (!messages || !roomId) return null;
-			return messages.filter((message) => message.chatroom.id === roomId).reverse();
+			return messages.filter((message) => message.chatroom === roomId).reverse();
 		},
 		[messages]
 	);
@@ -191,22 +152,17 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 	return (
 		<AppContext.Provider
 			value={{
+				appLoading,
 				chatrooms,
 				chatroomsError,
-				chatroomsLoading,
 				messages,
-				messagesLoading,
 				messagesError,
 				users,
-				usersLoading,
 				usersError,
 				selectedChatroom,
 				setSelectedChatroom,
 				newChatOpen,
 				setNewChatOpen,
-				addChatroom,
-				addMessage,
-				removeMessage,
 				getMessagesForRoom,
 			}}
 		>
