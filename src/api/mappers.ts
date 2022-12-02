@@ -1,9 +1,22 @@
 import { IApiChatmessage, IApiChatroom, IApiUser, IChatmessage, IChatroom, IUser } from "../types";
 
+const getInitialsForUsername = (username: string): string => {
+	if (username === "") return "";
+  
+	const split = username.split(" ");
+
+	if (split.length === 1) return split[0].charAt(0);
+	if (split.length === 2 || split.length === 3) {
+		return split.map((word) => word.charAt(0)).join("");
+	}
+
+	return username.charAt(0);
+};
+
 export const mapApiUser = (user: IApiUser): IUser => {
 	return {
 		id: user._id,
-		initials: user.username.charAt(0),
+		initials: getInitialsForUsername(user.username),
 		email: user.email,
 		username: user.username,
 	};

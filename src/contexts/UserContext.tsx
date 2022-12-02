@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import { GetUser, LoginUser } from "../api/User";
+import { GetUser, LoginUser, LogoutUser } from "../api/User";
 import { LoginResult } from "../types/Api";
 import { IUser } from "../types/User";
 
@@ -42,7 +42,7 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 		return result;
 	};
 
-	const signOut = () => {
+	const signOut = async () => {
 		setUser(undefined);
 		setJwt(undefined);
 	};

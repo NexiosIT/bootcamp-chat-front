@@ -1,7 +1,7 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Checkbox, List, ListItem } from "@mui/material";
-import { IUser } from "../../types";
-import { useUserContext } from "../../contexts";
+import { IUser } from "../../../../types";
+import { useUserContext } from "../../../../contexts";
 
 interface IUserSelectProps {
 	users: IUser[];

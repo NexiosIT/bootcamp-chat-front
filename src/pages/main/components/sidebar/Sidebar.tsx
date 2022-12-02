@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { ChatList, SidebarHeader, SidebarSearch } from "../../../../components";
 import styles from "./Sidebar.module.css";
 import { useAppContext } from "../../../../contexts/AppContext";
 import { useUserContext } from "../../../../contexts";
 import { IChatroom } from "../../../../types";
 import { filterChatrooms } from "../../../../utils/data";
+import { SidebarHeader } from "./SidebarHeader";
+import { SidebarSearch } from "./SidebarSearch";
+import { ChatList } from "./ChatList";
 
 export const Sidebar = () => {
 	const { chatrooms, setNewChatOpen, selectedChatroom, setSelectedChatroom, users } = useAppContext();

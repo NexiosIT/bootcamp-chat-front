@@ -30,7 +30,7 @@ export const getChatDisplayData = (chatroom: IChatroom, users: IUser[], userId?:
 		if (otherUserId && otherUser) {
 			avatar = otherUser.initials;
 			primary = otherUser.username;
-			secondary = "- secondary text -"; // todo, time of latest message could go here
+			secondary = "-";
 		}
 	}
 

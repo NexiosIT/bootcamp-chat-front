@@ -1,13 +1,13 @@
 import React from "react";
 import classNames from "classnames";
-import { ChatMessage } from "../core/ChatMessage";
 import styles from "./ChatHistory.module.css";
-import { IChatmessage, IUser } from "../../types";
 import { IconButton, Typography } from "@mui/material";
-import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../vars/messages";
 import { Delete } from "@mui/icons-material";
-import { DeleteMessage } from "../../api/Chatmessage";
-import { useUserContext } from "../../contexts";
+import { IChatmessage, IUser } from "../../../../types";
+import { useUserContext } from "../../../../contexts";
+import { DeleteMessage } from "../../../../api/Chatmessage";
+import { NO_CHAT_SELECTED, NO_MESSAGES } from "../../../../vars/messages";
+import { ChatMessage } from "../../../../components";
 
 interface IChatHistoryProps {
 	messages: IChatmessage[] | null;
@@ -43,8 +43,12 @@ export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 					const foundUser = users?.find((user) => user.id === message.user);
 
 					return (
-						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage })}>
-							<ChatMessage title={foundUser ? foundUser.username : ""} showTitle={!isSameSenderAsLast}>
+						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage }, {[styles.firstOfGroup] : !isSameSenderAsLast})}>
+							<ChatMessage
+								alignContent={isMyMessage ? "end" : "start"}
+								title={foundUser ? foundUser.username : ""}
+								showTitle={!isSameSenderAsLast}
+							>
 								{message.data}
 							</ChatMessage>
 							{isMyMessage && (

@@ -26,13 +26,13 @@ export const ChatInput = ({ onSubmitMessage, submitMessageLoading, enabled }: IC
 	const handleClickSubmit = useCallback(() => {
 		onSubmitMessage(value);
 		setValue("");
-	}, [value]);
+	}, [value, onSubmitMessage]);
 
 	const handleInputKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === "Enter") handleClickSubmit();
 		},
-		[value]
+		[handleClickSubmit]
 	);
 
 	return (
