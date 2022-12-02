@@ -5,7 +5,7 @@ import styles from "./CreateChatroomModal.module.css";
 import { CreateChatroomRequest, IUser } from "../../../../types";
 import { CreateChatroom } from "../../../../api/Chatroom";
 import { useUserContext } from "../../../../contexts";
-import { UserSelect } from "../../../../components/molecules/UserSelect";
+import { UserSelect } from "./UserSelect";
 
 export const CreateChatroomModal = () => {
 	const { newChatOpen, setNewChatOpen, users } = useAppContext();

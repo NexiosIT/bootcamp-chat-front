@@ -1,7 +1,9 @@
 import React, { useMemo } from "react";
-import { ChatHistory, ChatInput, ChatViewHeader } from "../../../../components";
 import { useUserContext } from "../../../../contexts";
 import { useAppContext } from "../../../../contexts/AppContext";
+import { ChatHistory } from "./ChatHistory";
+import { ChatInput } from "./ChatInput";
+import { ChatViewHeader } from "./ChatViewHeader";
 import styles from "./ChatView.module.css";
 
 interface IChatViewProps {

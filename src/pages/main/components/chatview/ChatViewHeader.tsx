@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { Avatar, Grid, Typography } from "@mui/material";
 import styles from "./ChatViewHeader.module.css";
-import { IChatroom } from "../../types";
-import { useAppContext } from "../../contexts/AppContext";
-import { useUserContext } from "../../contexts";
-import { getChatDisplayData } from "../../utils/data";
+import { useUserContext } from "../../../../contexts";
+import { useAppContext } from "../../../../contexts/AppContext";
+import { getChatDisplayData } from "../../../../utils/data";
+import { IChatroom } from "../../../../types";
 
 interface IChatViewHeaderProps {
 	selectedChat?: IChatroom;

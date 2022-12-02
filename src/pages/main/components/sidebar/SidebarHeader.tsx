@@ -1,9 +1,9 @@
 import React from "react";
 import { Avatar, Divider, Grid, ListItemIcon, MenuItem, Typography } from "@mui/material";
 import styles from "./SidebarHeader.module.css";
-import { ContextMenu } from "../core/ContextMenu";
 import { Logout } from "@mui/icons-material";
-import { useUserContext } from "../../contexts";
+import { useUserContext } from "../../../../contexts";
+import { ContextMenu } from "../../../../components";
 
 interface ISidebarHeaderProps {
 	onSignOut: () => void;

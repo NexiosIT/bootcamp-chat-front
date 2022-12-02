@@ -1,11 +1,11 @@
 import React from "react";
 import { Divider, List } from "@mui/material";
-import { useUserContext } from "../../contexts";
-import { useAppContext } from "../../contexts/AppContext";
-import { IChatroom } from "../../types";
-import { getChatDisplayData } from "../../utils/data";
 import styles from "./ChatList.module.css";
 import { ChatListItem } from "./ChatListItem";
+import { useUserContext } from "../../../../contexts";
+import { useAppContext } from "../../../../contexts/AppContext";
+import { IChatroom } from "../../../../types";
+import { getChatDisplayData } from "../../../../utils/data";
 
 interface IChatListProps {
 	chatrooms?: IChatroom[];
