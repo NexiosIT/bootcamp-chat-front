@@ -15,26 +15,44 @@ export const CreateChatroomModal = () => {
 	const [valid, setValid] = useState<boolean>(false);
 	const [name, setName] = useState<string>("");
 	const [ids, setIds] = useState<string[]>([]);
+	const [nameEnabled, setNameEnabled] = useState<boolean>(false);
 
 	useEffect(() => {
-		if (!name || name === "") setValid(false);
-    else if (!ids || ids.length < 2 ) setValid(false);
-		else setValid(true);
+		if (user && user.id) setIds([user.id]);
+	}, [user]);
+
+	useEffect(() => {
+		const noneSelected = ids.length === 1;
+		const isGroupChat = ids.length >= 3;
+
+		if (noneSelected) {
+			setValid(false);
+		} else {
+			if (isGroupChat) {
+				setValid(!!name && name !== "");
+			} else {
+				setValid(true);
+			}
+		}
 	}, [name, ids]);
+
+	useEffect(() => {
+		setNameEnabled(ids.length > 2);
+	}, [ids]);
 
 	const handleSubmit = async () => {
 		setLoading(true);
 
 		if (jwt) {
 			const request: CreateChatroomRequest = {
-				name,
+				name: ids.length > 2 ? name : "-",
 				allowed_users: ids,
 			};
 
 			const response = await CreateChatroom(jwt, request);
 
 			if (response?.isSuccess && response?.chatroom) {
-        // websocket will load in new chatroom
+				// websocket will load in new chatroom
 				setLoading(false);
 				setNewChatOpen(false);
 			} else {
@@ -43,22 +61,23 @@ export const CreateChatroomModal = () => {
 		}
 	};
 
-  const handleChangeCheckedUsers = (selectedUsers: IUser[]) => {
-    if (user && user.id) {
-      setIds([user.id, ...selectedUsers.map(user => user.id)])
-    }
-  }
- 
+	const handleChangeCheckedUsers = (selectedUsers: IUser[]) => {
+		if (user && user.id) {
+			setIds([user.id, ...selectedUsers.map((user) => user.id)]);
+		}
+	};
+
 	const handleClose = () => {
-    setName("");
+		setName("");
 		setNewChatOpen(false);
 	};
 
 	return (
 		<Dialog className={styles.CreateChatroomModal} open={newChatOpen} onClose={handleClose}>
-			<DialogTitle>New Chatroom</DialogTitle>
+			<DialogTitle>{ids.length > 2 ? "New Groupchat" : "New Chat"}</DialogTitle>
 			<DialogContent>
 				<TextField
+					disabled={!nameEnabled}
 					autoFocus
 					label="Chatroom Name"
 					type="text"
@@ -68,8 +87,8 @@ export const CreateChatroomModal = () => {
 					onChange={(e) => setName(e.target.value)}
 				/>
 				<div className={styles.userSelectContainer}>
-          {users ? <UserSelect onChange={handleChangeCheckedUsers} users={users} /> : "No users found"}
-        </div>
+					{users ? <UserSelect onChange={handleChangeCheckedUsers} users={users} /> : "No users found"}
+				</div>
 				{submitError && <Alert severity="error">{submitError}</Alert>}
 			</DialogContent>
 			<DialogActions style={{ padding: "20px" }}>
