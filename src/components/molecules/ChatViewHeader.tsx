@@ -1,11 +1,10 @@
 import React, { useMemo } from "react";
-import { Avatar, Grid, IconButton, Typography } from "@mui/material";
+import { Avatar, Grid, Typography } from "@mui/material";
 import styles from "./ChatViewHeader.module.css";
-import { MoreVert } from "@mui/icons-material";
 import { IChatroom } from "../../types";
 import { useAppContext } from "../../contexts/AppContext";
 import { useUserContext } from "../../contexts";
-import { getChatDisplayData, IChatDisplayData } from "../../utils/data";
+import { getChatDisplayData } from "../../utils/data";
 
 interface IChatViewHeaderProps {
 	selectedChat?: IChatroom;
@@ -20,7 +19,7 @@ export const ChatViewHeader = ({ selectedChat }: IChatViewHeaderProps) => {
 			selectedChat
 				? getChatDisplayData(selectedChat, users || [], user?.id)
 				: { primary: "", secondary: "", avatar: "" },
-		[selectedChat]
+		[selectedChat, users, user]
 	);
 
 	return (
