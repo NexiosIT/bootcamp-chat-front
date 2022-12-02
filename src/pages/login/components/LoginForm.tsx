@@ -35,7 +35,6 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 			<Typography variant="h4">Sign In</Typography>
 			<Box component="form" onSubmit={handleSubmit}>
 				<TextField
-          defaultValue="jvd@nexiosit.com"
 					margin="normal"
 					required
 					fullWidth
@@ -46,7 +45,6 @@ export const LoginForm = ({onSuccess}: ILoginFormProps) => {
 					autoFocus
 				/>
 				<TextField
-          defaultValue="password123"
 					margin="normal"
 					required
 					fullWidth
