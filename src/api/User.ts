@@ -55,11 +55,11 @@ export const LoginUser = async (email: string, password: string): Promise<LoginR
 	}
 };
 
-export const LogoutUser = async (email: string, password: string) => {
+export const LogoutUser = async (jwt: string) => {
 	const url = getApiBaseUrl() + "/auth/logout";
 
 	try {
-		const response = await axios.post(url, { email, password });
+		const response = await axios.post(url, {headers: getDefaultHeaders(jwt)});
 		console.log("logout response", response);
 	} catch (e) {
 		console.log("logout error", e);
