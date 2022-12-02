@@ -46,7 +46,6 @@ export const RegisterForm = ({ onSuccess }: IRegisterFormProps) => {
 
 		if (validForm && username && email && password) {
 			const result = await RegisterUser(username, email, password);
-
 			if (!result.isSuccess) {
 				setSubmitError(result.error);
 			} else {

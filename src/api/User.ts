@@ -10,7 +10,7 @@ export const RegisterUser = async (username: string, email: string, password: st
 
 	try {
 		const response = await axios.post(url, { username, email, password });
-		if (response.status === 200) {
+		if (response.status === 201) {
 			return {
 				isSuccess: true,
 			};
