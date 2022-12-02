@@ -1,8 +1,9 @@
 import React from "react";
-import { Avatar, Divider, Grid, ListItemIcon, MenuItem, Typography, IconButton, Tooltip } from "@mui/material";
+import { Avatar, Divider, Grid, ListItemIcon, MenuItem, Typography } from "@mui/material";
 import styles from "./SidebarHeader.module.css";
 import { ContextMenu } from "../core/ContextMenu";
 import { Logout } from "@mui/icons-material";
+import { useUserContext } from "../../contexts";
 
 interface ISidebarHeaderProps {
 	onSignOut: () => void;
@@ -10,14 +11,16 @@ interface ISidebarHeaderProps {
 }
 
 export const SidebarHeader = ({ onSignOut, onClickNewChat }: ISidebarHeaderProps) => {
+	const { user } = useUserContext();
 	return (
 		<Grid container padding={1} className={styles.sidebarHeaderContainer}>
-			<Grid item xs={9}>
-				<Avatar sx={{ width: 42, height: 42 }}>
-					<Typography>JD</Typography>
+			<Grid item xs={9} container flexDirection="row">
+				<Avatar sx={{ width: 42, height: 42, marginRight: "20px" }}>
+					<Typography>{user ? user.initials : ""}</Typography>
 				</Avatar>
+				<Typography style={{ marginTop: "6px" }}>{user ? user.username : ""}</Typography>
 			</Grid>
-			<Grid direction="row-reverse" container item paddingTop={0.5} xs={3}>
+			<Grid direction="row-reverse" container item xs={3}>
 				<ContextMenu>
 					<MenuItem onClick={onClickNewChat}>New Chatroom</MenuItem>
 					<Divider />
