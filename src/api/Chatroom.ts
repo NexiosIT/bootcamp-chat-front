@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CreateChatroomRequest, CreateChatroomResult, GetChatroomsResult, IApiChatroom } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
+import { mapApiChatroom } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
 
@@ -13,13 +14,7 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 		if (response.data && Array.isArray(response.data)) {
 			return {
 				isSuccess: true,
-				chatrooms: response.data.map((item: IApiChatroom) => {
-					return {
-						id: item._id,
-						allowedUsers: item?.allowed_users || [],
-						name: item?.name,
-					};
-				}),
+				chatrooms: response.data.map((room: IApiChatroom) => mapApiChatroom(room)),
 			};
 		}
 
@@ -36,17 +31,6 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 	}
 };
 
-export const GetChatroom = async (id: string) => {
-	const url = getApiBaseUrl() + `/rooms/${id}`;
-
-	try {
-		const response = axios.get(url);
-		console.log("get room response", response);
-	} catch (e) {
-		console.log("get room error", e);
-	}
-};
-
 export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomRequest): Promise<CreateChatroomResult> => {
 	const url = getApiBaseUrl() + "/rooms";
 
@@ -55,11 +39,7 @@ export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomReques
 		if (response.data && response.data.allowed_users && response.data.name && response.data._id) {
 			return {
 				isSuccess: true,
-				chatroom: {
-					allowedUsers: response.data.allowed_users,
-					id: response.data._id,
-					name: response.data.name,
-				},
+				chatroom: mapApiChatroom(response.data),
 			};
 		} else {
 			return DEFAULT_ERROR_RESULT;

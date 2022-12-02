@@ -58,7 +58,7 @@ export interface DeleteMessageResult extends ApiResultBase {}
 export interface IApiChatmessage {
 	_id: string;
 	user: string;
-	chatroom: IApiChatroom;
+	chatroom: string;
 	data: string;
 	published_at: string;
 }
@@ -73,5 +73,10 @@ export interface IApiUser {
 	_id: string;
 	email: string;
 	username: string;
-	initials: string;
+}
+
+// api websocket response types
+export interface IWSMessage {
+  event: "new_message" | "new_chatroom" | "new_user" | "delete_message";
+  data: any;
 }

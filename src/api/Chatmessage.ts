@@ -7,6 +7,7 @@ import {
 	IApiChatmessage,
 } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
+import { mapApiMessage } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
 
@@ -19,19 +20,7 @@ export const GetMessages = async (jwt: string): Promise<GetMessagesResult> => {
 		if (response.data && Array.isArray(response.data)) {
 			return {
 				isSuccess: true,
-				messages: response.data.map((message: IApiChatmessage) => {
-					return {
-						id: message._id,
-						chatroom: {
-							id: message.chatroom._id,
-							allowedUsers: message.chatroom.allowed_users,
-							name: message.chatroom.name,
-						},
-						data: message.data,
-						publishedAt: new Date(message.published_at),
-						user: message.user,
-					};
-				}),
+				messages: response.data.map((message: IApiChatmessage) => mapApiMessage(message)),
 			};
 		}
 
@@ -48,17 +37,6 @@ export const GetMessages = async (jwt: string): Promise<GetMessagesResult> => {
 	}
 };
 
-export const GetMessage = async (id: string) => {
-	const url = getApiBaseUrl() + `/messages/${id}`;
-
-	try {
-		const response = await axios.get(url);
-		console.log("get message response", response);
-	} catch (e) {
-		console.log("get message error", e);
-	}
-};
-
 export const CreateMessage = async (jwt: string, message: CreateMessageRequest): Promise<CreateMessageResult> => {
 	const url = getApiBaseUrl() + "/messages";
 
@@ -68,17 +46,7 @@ export const CreateMessage = async (jwt: string, message: CreateMessageRequest):
 		if (response.data) {
 			return {
 				isSuccess: true,
-				message: {
-					id: response.data._id,
-					chatroom: {
-						id: response.data.chatroom,
-						name: "",
-						allowedUsers: [],
-					},
-					publishedAt: new Date(response.data.published_at),
-					data: response.data.data,
-					user: response.data.user,
-				},
+				message: mapApiMessage(response.data),
 			};
 		}
 

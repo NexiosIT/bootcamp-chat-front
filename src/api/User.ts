@@ -1,6 +1,7 @@
 import axios from "axios";
 import { GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
 import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
+import { mapApiUser } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders } from "./utils";
 
@@ -9,9 +10,13 @@ export const RegisterUser = async (username: string, email: string, password: st
 
 	try {
 		const response = await axios.post(url, { username, email, password });
-		return {
-			isSuccess: true,
-		};
+		if (response.status === 200) {
+			return {
+				isSuccess: true,
+			};
+		}
+
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
 		if (axios.isAxiosError(e)) {
 			return {
@@ -71,12 +76,7 @@ export const GetUser = async (jwt: string): Promise<GetUserResult> => {
 		if (response.data) {
 			return {
 				isSuccess: true,
-				user: {
-					id: response.data?._id,
-					email: response.data?.email,
-					username: response.data?.username,
-					initials: response.data?.username.charAt(0),
-				},
+				user: mapApiUser(response.data),
 			};
 		}
 
@@ -102,14 +102,7 @@ export const GetUsers = async (jwt: string): Promise<GetUsersResult> => {
 		if (response.data && Array.isArray(response.data)) {
 			return {
 				isSuccess: true,
-				users: response.data.map((user: IApiUser) => {
-					return {
-						id: user._id,
-						email: user.email,
-						username: user.username,
-						initials: user.username.charAt(0),
-					};
-				}),
+				users: response.data.map((user: IApiUser) => mapApiUser(user)),
 			};
 		}
 

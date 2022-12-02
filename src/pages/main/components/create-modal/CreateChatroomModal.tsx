@@ -7,10 +7,8 @@ import { CreateChatroom } from "../../../../api/Chatroom";
 import { useUserContext } from "../../../../contexts";
 import { UserSelect } from "../../../../components/molecules/UserSelect";
 
-interface ICreateChatroomModalProps {}
-
 export const CreateChatroomModal = () => {
-	const { newChatOpen, setNewChatOpen, addChatroom, users } = useAppContext();
+	const { newChatOpen, setNewChatOpen, users } = useAppContext();
 	const { jwt, user } = useUserContext();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [submitError, setSubmitError] = useState<string>();
@@ -36,8 +34,7 @@ export const CreateChatroomModal = () => {
 			const response = await CreateChatroom(jwt, request);
 
 			if (response?.isSuccess && response?.chatroom) {
-				// chatroom succesfully made, add to state & close modal
-				addChatroom(response.chatroom);
+        // websocket will load in new chatroom
 				setLoading(false);
 				setNewChatOpen(false);
 			} else {
