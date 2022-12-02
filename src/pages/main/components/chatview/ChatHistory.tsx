@@ -43,8 +43,12 @@ export const ChatHistory = ({ messages, userId, users }: IChatHistoryProps) => {
 					const foundUser = users?.find((user) => user.id === message.user);
 
 					return (
-						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage })}>
-							<ChatMessage title={foundUser ? foundUser.username : ""} showTitle={!isSameSenderAsLast}>
+						<div key={index} className={classNames(styles.chatHistoryEntry, { [styles.isMine]: isMyMessage }, {[styles.firstOfGroup] : !isSameSenderAsLast})}>
+							<ChatMessage
+								alignContent={isMyMessage ? "end" : "start"}
+								title={foundUser ? foundUser.username : ""}
+								showTitle={!isSameSenderAsLast}
+							>
 								{message.data}
 							</ChatMessage>
 							{isMyMessage && (
