@@ -1,9 +1,8 @@
 import axios from "axios";
 import { CreateChatroomRequest, CreateChatroomResult, GetChatroomsResult, IApiChatroom } from "../types";
-import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { mapApiChatroom } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
-import { getApiBaseUrl, getDefaultHeaders } from "./utils";
+import { getApiBaseUrl, getDefaultHeaders, getErrorResponse } from "./utils";
 
 export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => {
 	const url = getApiBaseUrl() + "/rooms";
@@ -20,14 +19,7 @@ export const GetChatrooms = async (jwt: string): Promise<GetChatroomsResult> => 
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+    return getErrorResponse(e);
 	}
 };
 
@@ -45,13 +37,6 @@ export const CreateChatroom = async (jwt: string, chatroom: CreateChatroomReques
 			return DEFAULT_ERROR_RESULT;
 		}
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+    return getErrorResponse(e);
 	}
 };
