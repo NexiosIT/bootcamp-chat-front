@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
 import { useAppContext } from "../../../../contexts/AppContext";
 import styles from "./CreateChatroomModal.module.css";
@@ -12,41 +12,18 @@ export const CreateChatroomModal = () => {
 	const { jwt, user } = useUserContext();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [submitError, setSubmitError] = useState<string>();
-	const [valid, setValid] = useState<boolean>(false);
 	const [name, setName] = useState<string>("");
 	const [ids, setIds] = useState<string[]>([]);
-	const [nameEnabled, setNameEnabled] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (user && user.id) setIds([user.id]);
-	}, [user]);
-
-	useEffect(() => {
-		const noneSelected = ids.length === 1;
-		const isGroupChat = ids.length >= 3;
-
-		if (noneSelected) {
-			setValid(false);
-		} else {
-			if (isGroupChat) {
-				setValid(!!name && name !== "");
-			} else {
-				setValid(true);
-			}
-		}
-	}, [name, ids]);
-
-	useEffect(() => {
-		setNameEnabled(ids.length > 2);
-	}, [ids]);
 
 	const handleSubmit = async () => {
 		setLoading(true);
 
-		if (jwt) {
+		if (jwt && user) {
+			const allIds = [...ids, user.id];
+
 			const request: CreateChatroomRequest = {
-				name: ids.length > 2 ? name : "-",
-				allowed_users: ids,
+				name: allIds.length > 2 ? name : "Direct Message",
+				allowed_users: allIds,
 			};
 
 			const response = await CreateChatroom(jwt, request);
@@ -63,7 +40,7 @@ export const CreateChatroomModal = () => {
 
 	const handleChangeCheckedUsers = (selectedUsers: IUser[]) => {
 		if (user && user.id) {
-			setIds([user.id, ...selectedUsers.map((user) => user.id)]);
+			setIds(selectedUsers.map((user) => user.id));
 		}
 	};
 
@@ -71,6 +48,21 @@ export const CreateChatroomModal = () => {
 		setName("");
 		setNewChatOpen(false);
 	};
+
+	const nameEnabled = useMemo(() => ids.length > 1, [ids]);
+
+	const valid = useMemo(() => {
+		const noneSelected = ids.length === 0;
+		const isGroupChat = ids.length >= 2;
+
+		if (noneSelected) return false;
+
+		if (isGroupChat) {
+			return !!name && name !== "";
+		} else {
+			return true;
+		}
+	}, [ids, name]);
 
 	return (
 		<Dialog className={styles.CreateChatroomModal} open={newChatOpen} onClose={handleClose}>
