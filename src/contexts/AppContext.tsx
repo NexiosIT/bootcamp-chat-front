@@ -3,6 +3,7 @@ import { GetMessages } from "../api/Chatmessage";
 import { GetChatrooms } from "../api/Chatroom";
 import { mapApiChatroom, mapApiMessage, mapApiUser } from "../api/mappers";
 import { GetUsers } from "../api/User";
+import { getWebsocketApi } from "../api/utils";
 import { CreateChatroomModal } from "../pages/main/components/create-modal/CreateChatroomModal";
 import { IChatmessage, IChatroom, IUser, IWSMessage } from "../types";
 import { useUserContext } from "./UserContext";
@@ -54,7 +55,7 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 		if (jwt) {
 			if (webSocket.current) webSocket.current.close();
 
-			webSocket.current = new WebSocket("ws://localhost:3001");
+			webSocket.current = new WebSocket(getWebsocketApi());
 
 			webSocket.current.onopen = () => {
 				console.log("Websocket: Connection Opened.");
