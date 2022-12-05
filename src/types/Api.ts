@@ -77,6 +77,6 @@ export interface IApiUser {
 
 // api websocket response types
 export interface IWSMessage {
-  event: "new_message" | "new_chatroom" | "new_user" | "delete_message" | "deletechatroom";
+  event: "new_message" | "new_chatroom" | "new_user" | "delete_message" | "delete_chatroom";
   data: any;
 }
