@@ -1,9 +1,8 @@
 import axios from "axios";
-import { GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
-import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
+import { ApiResultBase, GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
 import { mapApiUser } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
-import { getApiBaseUrl, getDefaultHeaders } from "./utils";
+import { getApiBaseUrl, getDefaultHeaders, getErrorResponse } from "./utils";
 
 export const RegisterUser = async (username: string, email: string, password: string): Promise<RegisterResult> => {
 	const url = getApiBaseUrl() + "/users";
@@ -18,14 +17,7 @@ export const RegisterUser = async (username: string, email: string, password: st
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+		return getErrorResponse(e);
 	}
 };
 
@@ -44,25 +36,23 @@ export const LoginUser = async (email: string, password: string): Promise<LoginR
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+		return getErrorResponse(e);
 	}
 };
 
-export const LogoutUser = async (jwt: string) => {
+export const LogoutUser = async (jwt: string): Promise<ApiResultBase> => {
 	const url = getApiBaseUrl() + "/auth/logout";
 
 	try {
-		const response = await axios.post(url, {headers: getDefaultHeaders(jwt)});
-		console.log("logout response", response);
+		const response = await axios.post(url, { headers: getDefaultHeaders(jwt) });
+		if (response.status === 200) {
+			return {
+				isSuccess: true,
+			};
+		}
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		console.log("logout error", e);
+		return getErrorResponse(e);
 	}
 };
 
@@ -82,14 +72,7 @@ export const GetUser = async (jwt: string): Promise<GetUserResult> => {
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+		return getErrorResponse(e);
 	}
 };
 
@@ -108,13 +91,6 @@ export const GetUsers = async (jwt: string): Promise<GetUsersResult> => {
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+		return getErrorResponse(e);
 	}
 };

@@ -6,10 +6,9 @@ import {
 	GetMessagesResult,
 	IApiChatmessage,
 } from "../types";
-import { DEFAULT_ERROR_MESSAGE } from "../vars/messages";
 import { mapApiMessage } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
-import { getApiBaseUrl, getDefaultHeaders } from "./utils";
+import { getApiBaseUrl, getDefaultHeaders, getErrorResponse } from "./utils";
 
 export const GetMessages = async (jwt: string): Promise<GetMessagesResult> => {
 	const url = getApiBaseUrl() + "/messages";
@@ -26,14 +25,7 @@ export const GetMessages = async (jwt: string): Promise<GetMessagesResult> => {
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+    return getErrorResponse(e);
 	}
 };
 
@@ -52,14 +44,7 @@ export const CreateMessage = async (jwt: string, message: CreateMessageRequest):
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+    return getErrorResponse(e);
 	}
 };
 
@@ -76,13 +61,6 @@ export const DeleteMessage = async (jwt: string, id: string): Promise<DeleteMess
 
 		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		if (axios.isAxiosError(e)) {
-			return {
-				isSuccess: false,
-				error: e.response?.data?.message || DEFAULT_ERROR_MESSAGE,
-			};
-		} else {
-			return DEFAULT_ERROR_RESULT;
-		}
+    return getErrorResponse(e);
 	}
 };

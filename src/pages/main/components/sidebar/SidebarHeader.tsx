@@ -22,13 +22,15 @@ export const SidebarHeader = ({ onSignOut, onClickNewChat }: ISidebarHeaderProps
 			</Grid>
 			<Grid direction="row-reverse" container item xs={3}>
 				<ContextMenu>
-					<MenuItem onClick={onClickNewChat}>New Chatroom</MenuItem>
+					<MenuItem onClick={onClickNewChat}>
+						<Typography>New Chatroom</Typography>
+					</MenuItem>
 					<Divider />
 					<MenuItem onClick={onSignOut}>
 						<ListItemIcon>
 							<Logout fontSize="small" />
 						</ListItemIcon>
-						Sign Out
+						<Typography>Sign Out</Typography>
 					</MenuItem>
 				</ContextMenu>
 			</Grid>
