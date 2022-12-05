@@ -104,6 +104,15 @@ export const AppContextProvider = ({ children }: IProviderProps) => {
 							if (messageId) setMessages((prev) => (prev || []).filter((message) => message.id !== messageId));
 							break;
 						}
+						case "deletechatroom": {
+							const chatroomId = msg.data?.id;
+							if (chatroomId) {
+								// remove the chatroom
+								setChatrooms((prev) => (prev || []).filter((room) => room.id !== chatroomId));
+								// remove any messages from that room too
+								setMessages((prev) => (prev || []).filter((msg) => msg.chatroom !== chatroomId));
+							}
+						}
 					}
 				}
 			};
