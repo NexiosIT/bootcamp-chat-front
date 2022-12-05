@@ -1,5 +1,5 @@
 import axios from "axios";
-import { GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
+import { ApiResultBase, GetUserResult, GetUsersResult, IApiUser, LoginResult, RegisterResult } from "../types";
 import { mapApiUser } from "./mappers";
 import { DEFAULT_ERROR_RESULT } from "./shared";
 import { getApiBaseUrl, getDefaultHeaders, getErrorResponse } from "./utils";
@@ -40,14 +40,19 @@ export const LoginUser = async (email: string, password: string): Promise<LoginR
 	}
 };
 
-export const LogoutUser = async (jwt: string) => {
+export const LogoutUser = async (jwt: string): Promise<ApiResultBase> => {
 	const url = getApiBaseUrl() + "/auth/logout";
 
 	try {
 		const response = await axios.post(url, { headers: getDefaultHeaders(jwt) });
-		console.log("logout response", response);
+		if (response.status === 200) {
+			return {
+				isSuccess: true,
+			};
+		}
+		return DEFAULT_ERROR_RESULT;
 	} catch (e) {
-		console.log("logout error", e);
+		return getErrorResponse(e);
 	}
 };
 

@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useContext, useState } from "react";
-import { GetUser, LoginUser } from "../api/User";
+import { GetUser, LoginUser, LogoutUser } from "../api/User";
 import { LoginResult } from "../types/Api";
 import { IUser } from "../types/User";
 
@@ -41,6 +41,7 @@ export const UserContextProvider = ({ children }: IProviderProps) => {
 	};
 
 	const signOut = async () => {
+		if (jwt) await LogoutUser(jwt);
 		setUser(undefined);
 		setJwt(undefined);
 	};
