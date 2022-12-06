@@ -6,6 +6,7 @@ import { CreateChatroomRequest, IUser } from "../../../../types";
 import { CreateChatroom } from "../../../../api/Chatroom";
 import { useUserContext } from "../../../../contexts";
 import { UserSelect } from "./UserSelect";
+import { getUuid } from "../../../../utils/data";
 
 export const CreateChatroomModal = () => {
 	const { newChatOpen, setNewChatOpen, users } = useAppContext();
@@ -22,7 +23,7 @@ export const CreateChatroomModal = () => {
 			const allIds = [...ids, user.id];
 
 			const request: CreateChatroomRequest = {
-				name: allIds.length > 2 ? name : "Direct Message",
+				name: allIds.length > 2 ? name : "Direct-Message-" + getUuid(),
 				allowed_users: allIds,
 			};
 
